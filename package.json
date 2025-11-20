@@ -1,0 +1,23 @@
+{
+  "name": "ssss",
+  "version": "0.0.1",
+  "description": "Super Slow Smooth Scroll",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "smooth-scroll",
+    "slow-scroll",
+    "auto-scroll",
+    "scroll"
+  ],
+  "author": "Yamato Iizuka",
+  "license": "MIT",
+  "homepage": "https://yamatoiizuka.github.io/ssss/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yamatoiizuka/ssss"
+  },
+  "bugs": {
+    "url": "https://github.com/yamatoiizuka/ssss/issues"
+  }
+}
