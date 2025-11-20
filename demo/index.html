@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Demo</title>
+    <title>Super Slow Smooth Scroll</title>
     <style>
       * {
         margin: 0;
@@ -20,7 +20,7 @@
         flex-direction: column;
       }
 
-      /* ヘッダー・フッター */
+      /* Header & Footer */
       .header,
       .footer {
         flex-shrink: 0;
@@ -46,7 +46,14 @@
         margin: 0;
       }
 
-      /* ヘッダーのテキストに虹色グラデーションアニメーション */
+      @media (min-width: 768px) {
+        .header h2,
+        .footer h2 {
+          font-size: 24px;
+        }
+      }
+
+      /* Rainbow gradient animation for header text */
       .header h2 {
         background: linear-gradient(
           90deg,
@@ -68,7 +75,24 @@
         letter-spacing: 0.05em;
       }
 
-      /* フッターのテキストに縦方向グラデーション（上：黒 → 下：白） */
+      .header h2 a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .header-link .hover-text {
+        display: none;
+      }
+
+      .header-link:hover .default-text {
+        display: none;
+      }
+
+      .header-link:hover .hover-text {
+        display: inline;
+      }
+
+      /* Vertical gradient for footer text (top: black → bottom: gray) */
       .footer h2 {
         background: linear-gradient(180deg, #000000 0%, #adadad 100%);
         -webkit-background-clip: text;
@@ -88,7 +112,7 @@
         }
       }
 
-      /* コンテンツコンテナ */
+      /* Content container */
       .container {
         flex: 1;
         background: white;
@@ -96,7 +120,7 @@
         position: relative;
       }
 
-      /* スクロールバーを非表示 */
+      /* Hide scrollbar */
       .container {
         scrollbar-width: none; /* Firefox */
         -ms-overflow-style: none; /* IE and Edge */
@@ -147,7 +171,7 @@
         opacity: 0.7;
       }
 
-      /* スピードコントロール（中央固定） */
+      /* Speed control (fixed at center) */
       .speed-control {
         display: flex;
         position: fixed;
@@ -164,7 +188,7 @@
         max-width: calc(100vw - 60px);
       }
 
-      /* SPEED表示（操作中のみ） */
+      /* SPEED label (shown only during interaction) */
       .speed-label {
         display: none;
         position: fixed;
@@ -207,16 +231,20 @@
     </style>
   </head>
   <body>
-    <!-- ヘッダー -->
+    <!-- Header -->
     <header class="header">
       <h2>
-        <a href="https://github.com/yamatoiizuka/slow-scroll"
-          >↓ Super Slow Smooth Scroll</a
+        <a
+          href="https://github.com/yamatoiizuka/slow-scroll"
+          class="header-link"
         >
+          <span class="default-text">↓ Super Slow Smooth Scroll</span>
+          <span class="hover-text">GitHub Repo ↗︎</span>
+        </a>
       </h2>
     </header>
 
-    <!-- 補完ありコンテナ -->
+    <!-- Container with interpolation -->
     <div class="container" id="container-with">
       <div class="content" id="content-with">
         <h1>こころ</h1>
@@ -270,7 +298,7 @@
       </div>
     </div>
 
-    <!-- 補完なしコンテナ -->
+    <!-- Container without interpolation -->
     <div class="container" id="container-without">
       <div class="content" id="content-without">
         <h1>こころ</h1>
@@ -324,12 +352,12 @@
       </div>
     </div>
 
-    <!-- フッター -->
+    <!-- Footer -->
     <footer class="footer">
       <h2>↑ Without Smoothing</h2>
     </footer>
 
-    <!-- モバイル用スピードコントロール -->
+    <!-- Speed control for mobile -->
     <div class="speed-control">
       <input
         type="range"
@@ -341,77 +369,77 @@
       />
     </div>
 
-    <!-- SPEED表示（操作中のみ） -->
+    <!-- SPEED label (shown only during interaction) -->
     <div class="speed-label top" id="speedLabelTop">SPEED</div>
     <div class="speed-label bottom" id="speedLabelBottom">15px/s</div>
 
     <script type="module">
       import createSlowScroll from "../index.js";
 
-      // 補完あり（上段）- autoplay: true がデフォルトなので自動開始
+      // With interpolation (top) - auto-start with default autoplay: true
       const scrollerWith = createSlowScroll({
-        target: "#container-with", // スクロールするコンテナ
+        target: "#container-with", // Scroll container
         speed: 15,
         interpolation: true,
         bounce: true,
       });
 
-      // 補完なし（下段）- autoplay: true がデフォルトなので自動開始
+      // Without interpolation (bottom) - auto-start with default autoplay: true
       const scrollerWithout = createSlowScroll({
-        target: "#container-without", // スクロールするコンテナ
+        target: "#container-without", // Scroll container
         speed: 15,
         interpolation: false,
         bounce: true,
       });
 
-      // スピードコントロール
+      // Speed control
       const speedSlider = document.getElementById("speedSlider");
       const speedLabelTop = document.getElementById("speedLabelTop");
       const speedLabelBottom = document.getElementById("speedLabelBottom");
 
-      // レインボー位置を更新（軽量化版・逆方向）
+      // Update rainbow position (lightweight version, reverse direction)
       const updateRainbowPosition = (speed) => {
-        const pos = 200 - ((speed - 12) / 18) * 200; // 12-30 → 200-0%（逆方向）
+        const pos = 200 - ((speed - 12) / 18) * 200; // 12-30 → 200-0% (reverse)
         speedLabelTop.style.setProperty("--rainbow-pos", `${pos}%`);
         speedLabelBottom.style.setProperty("--rainbow-pos", `${pos}%`);
       };
 
-      // 初期表示を設定
+      // Set initial display
       updateRainbowPosition(parseFloat(speedSlider.value));
 
-      // 操作開始
+      // Start interaction
       const showSpeedLabels = () => {
         speedLabelTop.classList.add("active");
         speedLabelBottom.classList.add("active");
       };
 
-      // 操作終了
+      // End interaction
       const hideSpeedLabels = () => {
         speedLabelTop.classList.remove("active");
         speedLabelBottom.classList.remove("active");
       };
 
-      // 値変更
+      // Value change
       speedSlider.addEventListener("input", () => {
         const speed = parseFloat(speedSlider.value);
 
-        // 表示を更新
+        // Update display
         speedLabelBottom.textContent = `${speed.toFixed(1)}px/s`;
 
-        // 両方のスクローラーのスピードを更新
+        // Update speed for both scrollers
         scrollerWith.setSpeed(speed);
         scrollerWithout.setSpeed(speed);
 
-        // レインボー位置を同期
+        // Sync rainbow position
         updateRainbowPosition(speed);
       });
 
-      // 表示イベント
+      // Show events
       speedSlider.addEventListener("mouseenter", showSpeedLabels);
       speedSlider.addEventListener("mousedown", showSpeedLabels);
       speedSlider.addEventListener("touchstart", showSpeedLabels);
 
-      // 非表示イベント
+      // Hide events
       speedSlider.addEventListener("mouseleave", hideSpeedLabels);
       speedSlider.addEventListener("mouseup", hideSpeedLabels);
       speedSlider.addEventListener("touchend", hideSpeedLabels);
