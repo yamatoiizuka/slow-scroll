@@ -1,5 +1,5 @@
 /**
- * Super Slow Smooth Scroll (ssss)
+ * Super Slow Smooth Scroll
  *
  * A hybrid scrolling system that combines low-frequency native scrolling
  * with high-frequency CSS transform interpolation for smooth visual experience.
@@ -13,17 +13,17 @@
 // Default Configuration
 // ========================================
 const DEFAULTS = {
-  speed: 30,              // Pixels per second
-  interpolation: true,    // Enable transform interpolation
-  bounce: false,          // Reverse direction at boundaries
-  direction: 'down',      // Scroll direction: 'up', 'down', 'left', 'right'
-  autoplay: true,         // Start scrolling automatically on creation
+  speed: 30, // Pixels per second
+  interpolation: true, // Enable transform interpolation
+  bounce: false, // Reverse direction at boundaries
+  direction: "down", // Scroll direction: 'up', 'down', 'left', 'right'
+  autoplay: true, // Start scrolling automatically on creation
   onDirectionChange: null,
-  onBoundaryReached: null
+  onBoundaryReached: null,
 };
 
-const VALID_DIRECTIONS = ['up', 'down', 'left', 'right'];
-const SCROLL_AMOUNT = 1;  // Fixed at 1px for Safari compatibility
+const VALID_DIRECTIONS = ["up", "down", "left", "right"];
+const SCROLL_AMOUNT = 1; // Fixed at 1px for Safari compatibility
 
 // ========================================
 // Main Function
@@ -46,7 +46,7 @@ const SCROLL_AMOUNT = 1;  // Fixed at 1px for Safari compatibility
  *
  * @example
  * // With autoplay (default)
- * const scroller = createSmoothScroll({
+ * const scroller = createSlowScroll({
  *   target: '.project-grid',
  *   speed: 24,  // 24 pixels per second
  *   interpolation: true,
@@ -56,7 +56,7 @@ const SCROLL_AMOUNT = 1;  // Fixed at 1px for Safari compatibility
  * // Scrolling starts automatically
  *
  * // Without autoplay
- * const scroller = createSmoothScroll({
+ * const scroller = createSlowScroll({
  *   target: '.project-grid',
  *   speed: 24,
  *   autoplay: false
@@ -68,29 +68,35 @@ const SCROLL_AMOUNT = 1;  // Fixed at 1px for Safari compatibility
  *
  * // With DOM element (useful for React)
  * const element = document.querySelector('.project-grid');
- * const scroller = createSmoothScroll({
+ * const scroller = createSlowScroll({
  *   target: element,
  *   speed: 24
  * });
  */
-export function createSmoothScroll(options = {}) {
+export function createSlowScroll(options = {}) {
   // Validate required options
   if (!options.target) {
     throw new Error('SmoothScroll: "target" option is required');
   }
 
   // Validate target type
-  const isString = typeof options.target === 'string';
+  const isString = typeof options.target === "string";
   const isElement = options.target instanceof HTMLElement;
 
   if (!isString && !isElement) {
-    throw new Error('SmoothScroll: "target" must be a CSS selector string or HTMLElement');
+    throw new Error(
+      'SmoothScroll: "target" must be a CSS selector string or HTMLElement'
+    );
   }
 
   // Validate direction
   const direction = options.direction ?? DEFAULTS.direction;
   if (!VALID_DIRECTIONS.includes(direction)) {
-    throw new Error(`SmoothScroll: Invalid direction "${direction}". Must be one of: ${VALID_DIRECTIONS.join(', ')}`);
+    throw new Error(
+      `SmoothScroll: Invalid direction "${direction}". Must be one of: ${VALID_DIRECTIONS.join(
+        ", "
+      )}`
+    );
   }
 
   // Speed in pixels per second
@@ -112,20 +118,21 @@ export function createSmoothScroll(options = {}) {
     direction: direction,
     autoplay: options.autoplay ?? DEFAULTS.autoplay,
     onDirectionChange: options.onDirectionChange ?? DEFAULTS.onDirectionChange,
-    onBoundaryReached: options.onBoundaryReached ?? DEFAULTS.onBoundaryReached
+    onBoundaryReached: options.onBoundaryReached ?? DEFAULTS.onBoundaryReached,
   };
 
   // Helper function to get current frame interval
   const getFrameInterval = () => 1000 / config.fps;
 
   // Determine axis and initial direction based on config
-  const isVertical = config.direction === 'up' || config.direction === 'down';
-  const isHorizontal = config.direction === 'left' || config.direction === 'right';
+  const isVertical = config.direction === "up" || config.direction === "down";
+  const isHorizontal =
+    config.direction === "left" || config.direction === "right";
 
   // Initial scroll direction: 1 for down/right, -1 for up/left
   const getInitialDirection = () => {
-    if (config.direction === 'down' || config.direction === 'right') return 1;
-    if (config.direction === 'up' || config.direction === 'left') return -1;
+    if (config.direction === "down" || config.direction === "right") return 1;
+    if (config.direction === "up" || config.direction === "left") return -1;
     return 1;
   };
 
@@ -146,14 +153,16 @@ export function createSmoothScroll(options = {}) {
       if (scrollContainer === window) {
         return isVertical ? window.scrollY : window.scrollX;
       } else {
-        return isVertical ? scrollContainer.scrollTop : scrollContainer.scrollLeft;
+        return isVertical
+          ? scrollContainer.scrollTop
+          : scrollContainer.scrollLeft;
       }
     },
-    
+
     // Get maximum scroll position
     getMaxScroll: () => {
       if (scrollContainer === window) {
-        return isVertical 
+        return isVertical
           ? document.documentElement.scrollHeight - window.innerHeight
           : document.documentElement.scrollWidth - window.innerWidth;
       } else {
@@ -162,7 +171,7 @@ export function createSmoothScroll(options = {}) {
           : scrollContainer.scrollWidth - scrollContainer.clientWidth;
       }
     },
-    
+
     // Perform scroll
     scrollBy: (amount) => {
       if (scrollContainer === window) {
@@ -178,7 +187,7 @@ export function createSmoothScroll(options = {}) {
           scrollContainer.scrollLeft += amount;
         }
       }
-    }
+    },
   };
 
   /**
@@ -187,15 +196,17 @@ export function createSmoothScroll(options = {}) {
   function start() {
     // Already running
     if (animationId !== null) {
-      console.warn('SmoothScroll: Already running');
+      console.warn("SmoothScroll: Already running");
       return;
     }
 
     // Get scroll container (target)
-    if (typeof config.target === 'string') {
+    if (typeof config.target === "string") {
       targetElement = document.querySelector(config.target);
       if (!targetElement) {
-        throw new Error(`SmoothScroll: Element not found for selector "${config.target}"`);
+        throw new Error(
+          `SmoothScroll: Element not found for selector "${config.target}"`
+        );
       }
     } else {
       targetElement = config.target;
@@ -206,12 +217,14 @@ export function createSmoothScroll(options = {}) {
     const style = window.getComputedStyle(targetElement);
     const overflowY = style.overflowY;
     const overflowX = style.overflowX;
-    
-    const isScrollableY = (overflowY === 'auto' || overflowY === 'scroll') &&
-                         targetElement.scrollHeight > targetElement.clientHeight;
-    const isScrollableX = (overflowX === 'auto' || overflowX === 'scroll') &&
-                         targetElement.scrollWidth > targetElement.clientWidth;
-    
+
+    const isScrollableY =
+      (overflowY === "auto" || overflowY === "scroll") &&
+      targetElement.scrollHeight > targetElement.clientHeight;
+    const isScrollableX =
+      (overflowX === "auto" || overflowX === "scroll") &&
+      targetElement.scrollWidth > targetElement.clientWidth;
+
     if ((isVertical && isScrollableY) || (isHorizontal && isScrollableX)) {
       // Target element itself is scrollable
       scrollContainer = targetElement;
@@ -223,23 +236,26 @@ export function createSmoothScroll(options = {}) {
     // Get interpolation target
     if (config.interpolationTarget) {
       // User specified interpolation target
-      if (typeof config.interpolationTarget === 'string') {
+      if (typeof config.interpolationTarget === "string") {
         transformTarget = document.querySelector(config.interpolationTarget);
         if (!transformTarget) {
-          throw new Error(`SmoothScroll: Interpolation target not found for selector "${config.interpolationTarget}"`);
+          throw new Error(
+            `SmoothScroll: Interpolation target not found for selector "${config.interpolationTarget}"`
+          );
         }
       } else {
         transformTarget = config.interpolationTarget;
       }
     } else {
       // Default: same as scroll container
-      transformTarget = scrollContainer === window ? targetElement : scrollContainer;
+      transformTarget =
+        scrollContainer === window ? targetElement : scrollContainer;
     }
 
     // Apply performance CSS properties if interpolation is enabled
     if (config.interpolation && transformTarget) {
-      transformTarget.style.willChange = 'transform';
-      transformTarget.style.backfaceVisibility = 'hidden';
+      transformTarget.style.willChange = "transform";
+      transformTarget.style.backfaceVisibility = "hidden";
     }
 
     lastScrollTime = null;
@@ -266,23 +282,23 @@ export function createSmoothScroll(options = {}) {
           // Check if reached bottom
           if (scrollDirection === 1 && currentScroll >= maxScroll - 1) {
             atBoundary = true;
-            boundaryType = 'bottom';
+            boundaryType = "bottom";
           }
           // Check if reached top
           else if (scrollDirection === -1 && currentScroll <= 1) {
             atBoundary = true;
-            boundaryType = 'top';
+            boundaryType = "top";
           }
         } else if (isHorizontal) {
           // Check if reached right
           if (scrollDirection === 1 && currentScroll >= maxScroll - 1) {
             atBoundary = true;
-            boundaryType = 'right';
+            boundaryType = "right";
           }
           // Check if reached left
           else if (scrollDirection === -1 && currentScroll <= 1) {
             atBoundary = true;
-            boundaryType = 'left';
+            boundaryType = "left";
           }
         }
 
@@ -293,11 +309,11 @@ export function createSmoothScroll(options = {}) {
             scrollDirection *= -1;
 
             // Determine new direction name
-            let newDirectionName = '';
+            let newDirectionName = "";
             if (isVertical) {
-              newDirectionName = scrollDirection === 1 ? 'down' : 'up';
+              newDirectionName = scrollDirection === 1 ? "down" : "up";
             } else {
-              newDirectionName = scrollDirection === 1 ? 'right' : 'left';
+              newDirectionName = scrollDirection === 1 ? "right" : "left";
             }
 
             if (config.onDirectionChange) {
@@ -318,7 +334,7 @@ export function createSmoothScroll(options = {}) {
 
         // Reset transform (if interpolation is enabled)
         if (config.interpolation && transformTarget) {
-          transformTarget.style.transform = 'translate3d(0, 0, 0)';
+          transformTarget.style.transform = "translate3d(0, 0, 0)";
         }
 
         // Update last scroll time
@@ -353,9 +369,9 @@ export function createSmoothScroll(options = {}) {
 
       // Reset transform and CSS properties (if interpolation is enabled)
       if (transformTarget && config.interpolation) {
-        transformTarget.style.transform = 'translate3d(0, 0, 0)';
-        transformTarget.style.willChange = 'auto';
-        transformTarget.style.backfaceVisibility = 'visible';
+        transformTarget.style.transform = "translate3d(0, 0, 0)";
+        transformTarget.style.willChange = "auto";
+        transformTarget.style.backfaceVisibility = "visible";
       }
 
       targetElement = null;
@@ -383,22 +399,24 @@ export function createSmoothScroll(options = {}) {
    * @param {number} newSpeed - New speed in pixels per second
    */
   function setSpeed(newSpeed) {
-    if (typeof newSpeed !== 'number' || newSpeed <= 0) {
-      console.warn('SmoothScroll: Invalid speed value. Must be a positive number.');
+    if (typeof newSpeed !== "number" || newSpeed <= 0) {
+      console.warn(
+        "SmoothScroll: Invalid speed value. Must be a positive number."
+      );
       return;
     }
-    
+
     const wasRunning = isRunning();
-    
+
     // Stop current animation
     if (wasRunning) {
       stop();
     }
-    
+
     // Update config
     config.speed = newSpeed;
     config.fps = newSpeed / SCROLL_AMOUNT;
-    
+
     // Restart if it was running
     if (wasRunning) {
       start();
@@ -416,11 +434,11 @@ export function createSmoothScroll(options = {}) {
     stop,
     getConfig,
     isRunning,
-    setSpeed
+    setSpeed,
   };
 }
 
 /**
  * Default export for CommonJS/UMD compatibility
  */
-export default createSmoothScroll;
+export default createSlowScroll;

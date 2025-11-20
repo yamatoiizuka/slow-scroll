@@ -210,7 +210,7 @@
     <!-- ヘッダー -->
     <header class="header">
       <h2>
-        <a href="https://github.com/yamatoiizuka/ssss"
+        <a href="https://github.com/yamatoiizuka/slow-scroll"
           >↓ Super Slow Smooth Scroll</a
         >
       </h2>
@@ -346,10 +346,10 @@
     <div class="speed-label bottom" id="speedLabelBottom">15px/s</div>
 
     <script type="module">
-      import createSmoothScroll from "../index.js";
+      import createSlowScroll from "../index.js";
 
       // 補完あり（上段）- autoplay: true がデフォルトなので自動開始
-      const scrollerWith = createSmoothScroll({
+      const scrollerWith = createSlowScroll({
         target: "#container-with", // スクロールするコンテナ
         speed: 15,
         interpolation: true,
@@ -357,7 +357,7 @@
       });
 
       // 補完なし（下段）- autoplay: true がデフォルトなので自動開始
-      const scrollerWithout = createSmoothScroll({
+      const scrollerWithout = createSlowScroll({
         target: "#container-without", // スクロールするコンテナ
         speed: 15,
         interpolation: false,

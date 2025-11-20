@@ -1,8 +1,8 @@
-# Super Slow Smooth Scroll (ssss)
+# Super Slow Smooth Scroll
 
 Enables smooth and slow scrolling across all browsers.
 
-**[View Demo](https://yamatoiizuka.github.io/ssss/)**
+**[View Demo](https://yamatoiizuka.github.io/slow-scroll/)**
 
 ### How It Works
 
@@ -23,11 +23,11 @@ The target element uses `translateY` to visually interpolate between actual scro
 ### npm
 
 ```bash
-npm install ssss
+npm install slow-scroll
 ```
 
 ```javascript
-import createSmoothScroll from "ssss";
+import createSlowScroll from "slow-scroll";
 ```
 
 ## Usage
@@ -35,10 +35,10 @@ import createSmoothScroll from "ssss";
 ### Basic Example
 
 ```javascript
-import createSmoothScroll from "ssss";
+import createSlowScroll from "slow-scroll";
 
 // Create instance - starts automatically (autoplay: true by default)
-const scroller = createSmoothScroll({
+const scroller = createSlowScroll({
   target: ".content", // Scrollable container (required)
   interpolationTarget: ".inner", // Element to apply interpolation (optional, defaults to target)
   speed: 30, // Pixels per second (default: 30)
@@ -62,7 +62,7 @@ scroller.start();
 When you want to scroll one element but apply interpolation to another (useful for complex layouts):
 
 ```javascript
-const scroller = createSmoothScroll({
+const scroller = createSlowScroll({
   target: ".scrollable-container", // Element with overflow: auto
   interpolationTarget: ".inner-content", // Element to apply smooth interpolation
   speed: 20,
@@ -73,7 +73,7 @@ const scroller = createSmoothScroll({
 ### Manual Control (Without Autoplay)
 
 ```javascript
-const scroller = createSmoothScroll({
+const scroller = createSlowScroll({
   target: ".content",
   speed: 30,
   autoplay: false, // Disable autoplay
@@ -92,7 +92,7 @@ document.getElementById("stopBtn").addEventListener("click", () => {
 ### With Bounce Effect
 
 ```javascript
-const scroller = createSmoothScroll({
+const scroller = createSlowScroll({
   target: ".content",
   speed: 24, // 24 pixels per second
   bounce: true, // Enable bounce at boundaries
@@ -106,7 +106,7 @@ const scroller = createSmoothScroll({
 ### Horizontal Scrolling
 
 ```javascript
-const scroller = createSmoothScroll({
+const scroller = createSlowScroll({
   target: ".horizontal-content",
   direction: "right", // Scroll horizontally
   speed: 30,
@@ -117,7 +117,7 @@ const scroller = createSmoothScroll({
 ### Without Interpolation (Compare Performance)
 
 ```javascript
-const scroller = createSmoothScroll({
+const scroller = createSlowScroll({
   target: ".content",
   speed: 15, // 15 pixels per second
   interpolation: false, // Disable for comparison

@@ -1,5 +1,5 @@
 {
-  "name": "ssss",
+  "name": "slow-scroll",
   "version": "0.0.1",
   "description": "Super Slow Smooth Scroll",
   "main": "index.js",
@@ -23,12 +23,12 @@
   ],
   "author": "Yamato Iizuka",
   "license": "MIT",
-  "homepage": "https://yamatoiizuka.github.io/ssss/",
+  "homepage": "https://yamatoiizuka.github.io/slow-scroll/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yamatoiizuka/ssss"
+    "url": "https://github.com/yamatoiizuka/slow-scroll"
   },
   "bugs": {
-    "url": "https://github.com/yamatoiizuka/ssss/issues"
+    "url": "https://github.com/yamatoiizuka/slow-scroll/issues"
   }
 }

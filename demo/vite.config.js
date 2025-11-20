@@ -1,15 +1,14 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 
 export default defineConfig({
-  root: '.',
-  base: '/ssss/',
+  root: ".",
+  base: "/slow-scroll/",
   build: {
-    outDir: '../dist',
-    emptyOutDir: true
+    outDir: "../dist",
+    emptyOutDir: true,
   },
   server: {
     port: 3000,
-    open: true
-  }
+    open: true,
+  },
 });
-
