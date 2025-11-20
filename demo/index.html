@@ -1,367 +1,420 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Demo</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'YuMincho', serif;
-      background: #f5f5f5;
-      overflow: hidden;
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ヘッダー・フッター */
-    .header, .footer {
-      flex-shrink: 0;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      padding: 15px;
-      text-align: center;
-      z-index: 10;
-    }
-
-    .header {
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .footer {
-      border-top: 1px solid #e0e0e0;
-    }
-
-    .header h2, .footer h2 {
-      font-size: 21px;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    /* ヘッダーのテキストに虹色グラデーションアニメーション */
-    .header h2 {
-      background: linear-gradient(
-        90deg,
-        #ff0000,
-        #ff7f00,
-        #ffff00,
-        #00ff00,
-        #0088ff,
-        #4b0082,
-        #9400d3,
-        #ff0000
-      );
-      background-size: 200% 100%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: rainbow 3s linear infinite;
-      font-weight: bold;
-      letter-spacing: 0.05em;
-    }
-
-    /* フッターのテキストに縦方向グラデーション（上：黒 → 下：白） */
-    .footer h2 {
-      background: linear-gradient(
-        180deg,
-        #000000 0%,
-        #adadad 100%
-      );
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: 0.05em;
-      font-weight: bold;
-      -webkit-font-smoothing: none;
-    }
-
-    @keyframes rainbow {
-      0% {
-        background-position: 0% 50%;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demo</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-      100% {
-        background-position: 200% 50%;
+
+      body {
+        font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+        background: #f5f5f5;
+        overflow: hidden;
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
       }
-    }
 
-    /* コンテンツコンテナ */
-    .container {
-      flex: 1;
-      background: white;
-      overflow-y: auto;
-      position: relative;
-    }
+      /* ヘッダー・フッター */
+      .header,
+      .footer {
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 15px;
+        text-align: center;
+        z-index: 10;
+      }
 
-    /* スクロールバーを非表示 */
-    .container {
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE and Edge */
-    }
+      .header {
+        border-bottom: 1px solid #e0e0e0;
+      }
 
-    .container::-webkit-scrollbar {
-      display: none; /* Chrome, Safari, Opera */
-    }
+      .footer {
+        border-top: 1px solid #e0e0e0;
+      }
 
-    .content {
-      padding: 40px;
-      line-height: 2.2;
-      font-size: 16px;
-      color: #333;
-      max-width: 600px;
-      width: 100%;
-      margin: 0 auto;
-      text-align: center;
-    }
+      .header h2,
+      .footer h2 {
+        font-size: 21px;
+        font-weight: 600;
+        margin: 0;
+      }
 
-    .content h1 {
-      font-size: 24px;
-      text-align: center;
-      margin-bottom: 40px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-    }
+      /* ヘッダーのテキストに虹色グラデーションアニメーション */
+      .header h2 {
+        background: linear-gradient(
+          90deg,
+          #ff0000,
+          #ff7f00,
+          #ffff00,
+          #00ff00,
+          #0088ff,
+          #4b0082,
+          #9400d3,
+          #ff0000
+        );
+        background-size: 200% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: rainbow 3s linear infinite;
+        font-weight: bold;
+        letter-spacing: 0.05em;
+      }
 
-    .content h2 {
-      font-size: 18px;
-      margin: 40px 0 20px;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-    }
+      /* フッターのテキストに縦方向グラデーション（上：黒 → 下：白） */
+      .footer h2 {
+        background: linear-gradient(180deg, #000000 0%, #adadad 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: 0.05em;
+        font-weight: bold;
+        -webkit-font-smoothing: none;
+      }
 
-    .content p {
-      margin-bottom: 1.8em;
-      text-align: justify;
-    }
+      @keyframes rainbow {
+        0% {
+          background-position: 0% 50%;
+        }
+        100% {
+          background-position: 200% 50%;
+        }
+      }
 
-    .ruby {
-      position: relative;
-      display: inline-block;
-    }
+      /* コンテンツコンテナ */
+      .container {
+        flex: 1;
+        background: white;
+        overflow-y: auto;
+        position: relative;
+      }
 
-    .ruby rt {
-      font-size: 0.5em;
-      opacity: 0.7;
-    }
+      /* スクロールバーを非表示 */
+      .container {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+      }
 
-    /* スピードコントロール（中央固定） */
-    .speed-control {
-      display: flex;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 1000;
-      align-items: center;
-      gap: 10px;
-    }
+      .container::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+      }
 
-    .speed-control input[type="range"] {
-      width: 520px;
-      max-width: calc(100vw - 80px);
-    }
+      .content {
+        padding: 30px;
+        line-height: 2;
+        font-size: 18px;
+        color: #333;
+        max-width: 600px;
+        width: 100%;
+        margin: 0 auto;
+        text-align: center;
+      }
 
-    /* SPEED表示（操作中のみ） */
-    .speed-label {
-      display: none;
-      position: fixed;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: min(15vw, 80px);
-      font-weight: bold;
-      z-index: 999;
-      pointer-events: none;
-      background: linear-gradient(
-        90deg,
-        #ff0000,
-        #ff7f00,
-        #ffff00,
-        #00ff00,
-        #0088ff,
-        #4b0082,
-        #9400d3,
-        #ff0000
-      );
-      background-size: 200% 100%;
-      background-position: var(--rainbow-pos, 0%) 50%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      will-change: background-position;
-    }
+      .content h1 {
+        font-size: 27px;
+        text-align: center;
+        margin-bottom: 40px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+      }
 
-    .speed-label.top {
-      top: 30%;
-    }
+      .content h2 {
+        font-size: 18px;
+        margin: 40px 0 20px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+      }
 
-    .speed-label.bottom {
-      top: 70%;
-    }
+      .content p {
+        margin-bottom: 1.8em;
+        text-align: justify;
+      }
 
-    .speed-label.active {
-      display: block;
-    }
-  </style>
-</head>
-<body>
-  <!-- ヘッダー -->
-  <header class="header">
-    <h2>↓ Super Slow Smooth Scroll</h2>
-  </header>
+      .ruby {
+        position: relative;
+        display: inline-block;
+      }
 
-  <!-- 補完ありコンテナ -->
-  <div class="container" id="container-with">
-    <div class="content" id="content-with">
-      <h1>こころ</h1>
-      <p style="text-align: right; font-size: 14px; margin-bottom: 40px;">夏目漱石</p>
+      .ruby rt {
+        font-size: 0.5em;
+        opacity: 0.7;
+      }
 
-      <h2>上 先生と私</h2>
+      /* スピードコントロール（中央固定） */
+      .speed-control {
+        display: flex;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        align-items: center;
+        gap: 10px;
+      }
 
-      <p>私はその人を常に先生と呼んでいた。だからここでもただ先生と書くだけで本名は打ち明けない。これは世間を憚かる遠慮というよりも、その方が私にとって自然だからである。私はその人の記憶を呼び起すごとに、すぐ「先生」といいたくなる。筆を執っても心持は同じ事である。よそよそしい頭文字などはとても使う気にならない。</p>
+      .speed-control input[type="range"] {
+        width: 540px;
+        max-width: calc(100vw - 60px);
+      }
 
-      <p>私が先生と知り合いになったのは鎌倉である。その時私はまだ若々しい書生であった。暑中休暇を利用して海水浴に行った友達からぜひ来いという端書を受け取ったので、私は多少の金を工面して、出掛ける事にした。私は金の工面に二、三日を費やした。ところが私が鎌倉に着いて三日と経たないうちに、私を呼び寄せた友達は、急に国元から帰れという電報を受け取った。電報には母が病気だからと断ってあったけれども友達はそれを信じなかった。友達はかねてから国元にいる親たちに勧まない結婚を強いられていた。彼は現代の習慣からいうと結婚するにはあまり年が若過ぎた。それに肝心の当人が気に入らなかった。それで夏休みに当然帰るべきところを、わざと避けて東京の近くで遊んでいたのである。彼は電報を私に見せてどうしようと相談をした。私にはどうしていいか分らなかった。</p>
+      /* SPEED表示（操作中のみ） */
+      .speed-label {
+        display: none;
+        position: fixed;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: min(15vw, 80px);
+        font-weight: bold;
+        z-index: 999;
+        pointer-events: none;
+        background: linear-gradient(
+          90deg,
+          #ff0000,
+          #ff7f00,
+          #ffff00,
+          #00ff00,
+          #0088ff,
+          #4b0082,
+          #9400d3,
+          #ff0000
+        );
+        background-size: 200% 100%;
+        background-position: var(--rainbow-pos, 0%) 50%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        will-change: background-position;
+      }
 
-      <p>けれども実際彼の母が病気であったという事が後で分った。彼は家族に手紙を出すべき時機を逸したため、まったく無用の懸念を親たちに背負はせた訳であった。私はその後先生の宅に出入りするようになってから、つまりいつとはなしに、先生を親友としてそう呼ぶようになってから、この時の友達と先生との偶然の出来事を時々思い出した。私は先生の宅へ行くたびに、あの友達の電報を思び浮かべた。けれどもその時私はまだ先生の真正の所在を知らなかった。私は後で先生について話す方が順当であると思ったから、先生の過去の出来事に関する知識は、ここで一応私の領分外に置くことにする。</p>
+      .speed-label.top {
+        top: 30%;
+      }
 
-      <p>友達は菓子折の一つも買って、それを女中に渡して、帰りがけに私の宿へ寄った。そうして一所に行くはずの筈であった東京行を私一人に譲って、自分は当然の帰省を急ぐことになった。私はこの時、少くとも一週間は先生と話をする機会を得たのである。</p>
+      .speed-label.bottom {
+        top: 70%;
+      }
 
-      <p>その一週間の間に私はただ二、三度先生の姿を見かけただけであった。それも浜辺で出会う時か、または宿の出入にちょっと擦れ違う時などであった。先生には奥さんがあった。その奥さんは先生と同じような場所に寝起きしていたのである。私は何の気なしに帰って来た時に偶然その細君を見た。驚いたことにその細君は私の知っている人に非常に似ていた。それは私の郷里の先輩で、今教師をしている人の娘であった。私は細君の顔を見た時、おやと思った。そうしてそれを見つめた。細君は微笑を含んで挨拶した。</p>
+      .speed-label.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header class="header">
+      <h2>
+        <a href="https://github.com/yamatoiizuka/ssss"
+          >↓ Super Slow Smooth Scroll</a
+        >
+      </h2>
+    </header>
 
-      <p>その晩私はとうとう先生の間へ行った。先生は書物を読んでいた。私はその間際に坐って、先生にこれこれだと打ち明けた。すると先生は読みかけた本を伏せて、「いや君が誰だか私にもよく分っている」といった。先生はそれから少し笑いながら、「どうも君の顔には見覚えがある。けれどもどこで会ったのだかちょっと思い出せないのだ」と付け加えた。私はついに、先生が私の面会を正直に認める気色のない事を悟った。私はこの時単に先生の冷淡に驚いただけであった。</p>
+    <!-- 補完ありコンテナ -->
+    <div class="container" id="container-with">
+      <div class="content" id="content-with">
+        <h1>こころ</h1>
+        <p style="text-align: right; font-size: 16px; margin-bottom: 40px">
+          夏目漱石
+        </p>
 
-      <p>それから四、五日経って、もう帰るという時になって、先生は突然私に向って、私の読んでいる本について聞いた。先生は私の手許にある本の題を見て、「君はドイツ語を勉強するのかね」と尋ねた。私は第二学年の独乙語の試験を受けなければならないので、読んでいるのだと答えた。先生は笑って、「ドイツ語は六かしいだろう」といった。私は黙っていた。先生は更に、「もう東京へ帰るのかね」と聞いた。私がそうだと返事をすると、先生は「また遊びに来たまえ」といった。私はそのままその言葉を信じて、先生の宅を訪ねることにした。</p>
+        <h2>上 先生と私</h2>
 
-      <h2>二</h2>
+        <p>
+          私はその人を常に先生と呼んでいた。だからここでもただ先生と書くだけで本名は打ち明けない。これは世間を憚かる遠慮というよりも、その方が私にとって自然だからである。私はその人の記憶を呼び起すごとに、すぐ「先生」といいたくなる。筆を執っても心持は同じ事である。よそよそしい頭文字などはとても使う気にならない。
+        </p>
 
-      <p>その時私はまだ二十歳前後の若者であった。けれども先生という人は、私から見ると既に老人であった。先生には頭の毛が全くなかった。その代り髭が立派に生えていた。私は先生の髭だけを見ても十分老人という感じを受け取る事が出来た。それで私は先生を非常に尊敬した。先生が非常に尊敬すべき人間であるという事実を、私は後になって始めて承知したのであるけれども、頭の禿げた事と髭の立派な事とは、私に取って先生の人格に一種の信用を与えるものとして認められた。</p>
+        <p>
+          私が先生と知り合いになったのは鎌倉である。その時私はまだ若々しい書生であった。暑中休暇を利用して海水浴に行った友達からぜひ来いという端書を受け取ったので、私は多少の金を工面して、出掛ける事にした。私は金の工面に二、三日を費やした。ところが私が鎌倉に着いて三日と経たないうちに、私を呼び寄せた友達は、急に国元から帰れという電報を受け取った。電報には母が病気だからと断ってあったけれども友達はそれを信じなかった。友達はかねてから国元にいる親たちに勧まない結婚を強いられていた。彼は現代の習慣からいうと結婚するにはあまり年が若過ぎた。それに肝心の当人が気に入らなかった。それで夏休みに当然帰るべきところを、わざと避けて東京の近くで遊んでいたのである。彼は電報を私に見せてどうしようと相談をした。私にはどうしていいか分らなかった。
+        </p>
 
-      <p>先生はずっと若く見える細君を連れて鎌倉の或る寺に間借りをしていた。私はその寺の門前を通る時に、先生夫婦の姿をよく目撃した。彼らは大抵一所に行動していた。そうしてどこへ行くのだか私には分らなかった。私の宿は海岸に近かった。しかし先生の宿はそうでなかった。それでも私は毎日のように浜辺で先生に出会った。先生は大抵きまった時刻に浜へ出た。そうして大抵きまった時刻に帰った。私は偶然それを二、三度繰り返しているうちに、先生の習慣に気が付いた。その時私は先生に話しかけたくなった。しかしこっちは若いものの事だから、ただ挨拶ばかりして別れてしまうのが常であった。</p>
+        <p>
+          けれども実際彼の母が病気であったという事が後で分った。彼は家族に手紙を出すべき時機を逸したため、まったく無用の懸念を親たちに背負はせた訳であった。私はその後先生の宅に出入りするようになってから、つまりいつとはなしに、先生を親友としてそう呼ぶようになってから、この時の友達と先生との偶然の出来事を時々思い出した。私は先生の宅へ行くたびに、あの友達の電報を思び浮かべた。けれどもその時私はまだ先生の真正の所在を知らなかった。私は後で先生について話す方が順当であると思ったから、先生の過去の出来事に関する知識は、ここで一応私の領分外に置くことにする。
+        </p>
 
-      <p>先生はいつも同じ場所で海に入った。私も亦いつもの通り同じ場所で海に入った。先生は全く閑静な人であった。私はその近辺にいる人たちのように、決して派手な泳ぎ方をしなかった。先生も全く地味な泳ぎ方をした。先生は波の遠くへ出て行っては、長い間どこにいるのか分らないくらい、じっとしていることがあった。それから何の前触れもなく、突然私の前に頭を出すこともあった。</p>
+        <p>
+          友達は菓子折の一つも買って、それを女中に渡して、帰りがけに私の宿へ寄った。そうして一所に行くはずの筈であった東京行を私一人に譲って、自分は当然の帰省を急ぐことになった。私はこの時、少くとも一週間は先生と話をする機会を得たのである。
+        </p>
+
+        <p>
+          その一週間の間に私はただ二、三度先生の姿を見かけただけであった。それも浜辺で出会う時か、または宿の出入にちょっと擦れ違う時などであった。先生には奥さんがあった。その奥さんは先生と同じような場所に寝起きしていたのである。私は何の気なしに帰って来た時に偶然その細君を見た。驚いたことにその細君は私の知っている人に非常に似ていた。それは私の郷里の先輩で、今教師をしている人の娘であった。私は細君の顔を見た時、おやと思った。そうしてそれを見つめた。細君は微笑を含んで挨拶した。
+        </p>
+
+        <p>
+          その晩私はとうとう先生の間へ行った。先生は書物を読んでいた。私はその間際に坐って、先生にこれこれだと打ち明けた。すると先生は読みかけた本を伏せて、「いや君が誰だか私にもよく分っている」といった。先生はそれから少し笑いながら、「どうも君の顔には見覚えがある。けれどもどこで会ったのだかちょっと思い出せないのだ」と付け加えた。私はついに、先生が私の面会を正直に認める気色のない事を悟った。私はこの時単に先生の冷淡に驚いただけであった。
+        </p>
+
+        <p>
+          それから四、五日経って、もう帰るという時になって、先生は突然私に向って、私の読んでいる本について聞いた。先生は私の手許にある本の題を見て、「君はドイツ語を勉強するのかね」と尋ねた。私は第二学年の独乙語の試験を受けなければならないので、読んでいるのだと答えた。先生は笑って、「ドイツ語は六かしいだろう」といった。私は黙っていた。先生は更に、「もう東京へ帰るのかね」と聞いた。私がそうだと返事をすると、先生は「また遊びに来たまえ」といった。私はそのままその言葉を信じて、先生の宅を訪ねることにした。
+        </p>
+
+        <h2>二</h2>
+
+        <p>
+          その時私はまだ二十歳前後の若者であった。けれども先生という人は、私から見ると既に老人であった。先生には頭の毛が全くなかった。その代り髭が立派に生えていた。私は先生の髭だけを見ても十分老人という感じを受け取る事が出来た。それで私は先生を非常に尊敬した。先生が非常に尊敬すべき人間であるという事実を、私は後になって始めて承知したのであるけれども、頭の禿げた事と髭の立派な事とは、私に取って先生の人格に一種の信用を与えるものとして認められた。
+        </p>
+
+        <p>
+          先生はずっと若く見える細君を連れて鎌倉の或る寺に間借りをしていた。私はその寺の門前を通る時に、先生夫婦の姿をよく目撃した。彼らは大抵一所に行動していた。そうしてどこへ行くのだか私には分らなかった。私の宿は海岸に近かった。しかし先生の宿はそうでなかった。それでも私は毎日のように浜辺で先生に出会った。先生は大抵きまった時刻に浜へ出た。そうして大抵きまった時刻に帰った。私は偶然それを二、三度繰り返しているうちに、先生の習慣に気が付いた。その時私は先生に話しかけたくなった。しかしこっちは若いものの事だから、ただ挨拶ばかりして別れてしまうのが常であった。
+        </p>
+
+        <p>
+          先生はいつも同じ場所で海に入った。私も亦いつもの通り同じ場所で海に入った。先生は全く閑静な人であった。私はその近辺にいる人たちのように、決して派手な泳ぎ方をしなかった。先生も全く地味な泳ぎ方をした。先生は波の遠くへ出て行っては、長い間どこにいるのか分らないくらい、じっとしていることがあった。それから何の前触れもなく、突然私の前に頭を出すこともあった。
+        </p>
+      </div>
     </div>
-  </div>
 
-  <!-- 補完なしコンテナ -->
-  <div class="container" id="container-without">
-    <div class="content" id="content-without">
-      <h1>こころ</h1>
-      <p style="text-align: right; font-size: 14px; margin-bottom: 40px;">夏目漱石</p>
+    <!-- 補完なしコンテナ -->
+    <div class="container" id="container-without">
+      <div class="content" id="content-without">
+        <h1>こころ</h1>
+        <p style="text-align: right; font-size: 16px; margin-bottom: 40px">
+          夏目漱石
+        </p>
 
-      <h2>上 先生と私</h2>
+        <h2>上 先生と私</h2>
 
-      <p>私はその人を常に先生と呼んでいた。だからここでもただ先生と書くだけで本名は打ち明けない。これは世間を憚かる遠慮というよりも、その方が私にとって自然だからである。私はその人の記憶を呼び起すごとに、すぐ「先生」といいたくなる。筆を執っても心持は同じ事である。よそよそしい頭文字などはとても使う気にならない。</p>
+        <p>
+          私はその人を常に先生と呼んでいた。だからここでもただ先生と書くだけで本名は打ち明けない。これは世間を憚かる遠慮というよりも、その方が私にとって自然だからである。私はその人の記憶を呼び起すごとに、すぐ「先生」といいたくなる。筆を執っても心持は同じ事である。よそよそしい頭文字などはとても使う気にならない。
+        </p>
 
-      <p>私が先生と知り合いになったのは鎌倉である。その時私はまだ若々しい書生であった。暑中休暇を利用して海水浴に行った友達からぜひ来いという端書を受け取ったので、私は多少の金を工面して、出掛ける事にした。私は金の工面に二、三日を費やした。ところが私が鎌倉に着いて三日と経たないうちに、私を呼び寄せた友達は、急に国元から帰れという電報を受け取った。電報には母が病気だからと断ってあったけれども友達はそれを信じなかった。友達はかねてから国元にいる親たちに勧まない結婚を強いられていた。彼は現代の習慣からいうと結婚するにはあまり年が若過ぎた。それに肝心の当人が気に入らなかった。それで夏休みに当然帰るべきところを、わざと避けて東京の近くで遊んでいたのである。彼は電報を私に見せてどうしようと相談をした。私にはどうしていいか分らなかった。</p>
+        <p>
+          私が先生と知り合いになったのは鎌倉である。その時私はまだ若々しい書生であった。暑中休暇を利用して海水浴に行った友達からぜひ来いという端書を受け取ったので、私は多少の金を工面して、出掛ける事にした。私は金の工面に二、三日を費やした。ところが私が鎌倉に着いて三日と経たないうちに、私を呼び寄せた友達は、急に国元から帰れという電報を受け取った。電報には母が病気だからと断ってあったけれども友達はそれを信じなかった。友達はかねてから国元にいる親たちに勧まない結婚を強いられていた。彼は現代の習慣からいうと結婚するにはあまり年が若過ぎた。それに肝心の当人が気に入らなかった。それで夏休みに当然帰るべきところを、わざと避けて東京の近くで遊んでいたのである。彼は電報を私に見せてどうしようと相談をした。私にはどうしていいか分らなかった。
+        </p>
 
-      <p>けれども実際彼の母が病気であったという事が後で分った。彼は家族に手紙を出すべき時機を逸したため、まったく無用の懸念を親たちに背負はせた訳であった。私はその後先生の宅に出入りするようになってから、つまりいつとはなしに、先生を親友としてそう呼ぶようになってから、この時の友達と先生との偶然の出来事を時々思い出した。私は先生の宅へ行くたびに、あの友達の電報を思い浮かべた。けれどもその時私はまだ先生の真正の所在を知らなかった。私は後で先生について話す方が順当であると思ったから、先生の過去の出来事に関する知識は、ここで一応私の領分外に置くことにする。</p>
+        <p>
+          けれども実際彼の母が病気であったという事が後で分った。彼は家族に手紙を出すべき時機を逸したため、まったく無用の懸念を親たちに背負はせた訳であった。私はその後先生の宅に出入りするようになってから、つまりいつとはなしに、先生を親友としてそう呼ぶようになってから、この時の友達と先生との偶然の出来事を時々思い出した。私は先生の宅へ行くたびに、あの友達の電報を思い浮かべた。けれどもその時私はまだ先生の真正の所在を知らなかった。私は後で先生について話す方が順当であると思ったから、先生の過去の出来事に関する知識は、ここで一応私の領分外に置くことにする。
+        </p>
 
-      <p>友達は菓子折の一つも買って、それを女中に渡して、帰りがけに私の宿へ寄った。そうして一所に行くはずの筈であった東京行を私一人に譲って、自分は当然の帰省を急ぐことになった。私はこの時、少くとも一週間は先生と話をする機会を得たのである。</p>
+        <p>
+          友達は菓子折の一つも買って、それを女中に渡して、帰りがけに私の宿へ寄った。そうして一所に行くはずの筈であった東京行を私一人に譲って、自分は当然の帰省を急ぐことになった。私はこの時、少くとも一週間は先生と話をする機会を得たのである。
+        </p>
 
-      <p>その一週間の間に私はただ二、三度先生の姿を見かけただけであった。それも浜辺で出会う時か、または宿の出入にちょっと擦れ違う時などであった。先生には奥さんがあった。その奥さんは先生と同じような場所に寝起きしていたのである。私は何の気なしに帰って来た時に偶然その細君を見た。驚いたことにその細君は私の知っている人に非常に似ていた。それは私の郷里の先輩で、今教師をしている人の娘であった。私は細君の顔を見た時、おやと思った。そうしてそれを見つめた。細君は微笑を含んで挨拶した。</p>
+        <p>
+          その一週間の間に私はただ二、三度先生の姿を見かけただけであった。それも浜辺で出会う時か、または宿の出入にちょっと擦れ違う時などであった。先生には奥さんがあった。その奥さんは先生と同じような場所に寝起きしていたのである。私は何の気なしに帰って来た時に偶然その細君を見た。驚いたことにその細君は私の知っている人に非常に似ていた。それは私の郷里の先輩で、今教師をしている人の娘であった。私は細君の顔を見た時、おやと思った。そうしてそれを見つめた。細君は微笑を含んで挨拶した。
+        </p>
 
-      <p>その晩私はとうとう先生の間へ行った。先生は書物を読んでいた。私はその間際に坐って、先生にこれこれだと打ち明けた。すると先生は読みかけた本を伏せて、「いや君が誰だか私にもよく分っている」といった。先生はそれから少し笑いながら、「どうも君の顔には見覚えがある。けれどもどこで会ったのだかちょっと思い出せないのだ」と付け加えた。私はついに、先生が私の面会を正直に認める気色のない事を悟った。私はこの時単に先生の冷淡に驚いただけであった。</p>
+        <p>
+          その晩私はとうとう先生の間へ行った。先生は書物を読んでいた。私はその間際に坐って、先生にこれこれだと打ち明けた。すると先生は読みかけた本を伏せて、「いや君が誰だか私にもよく分っている」といった。先生はそれから少し笑いながら、「どうも君の顔には見覚えがある。けれどもどこで会ったのだかちょっと思い出せないのだ」と付け加えた。私はついに、先生が私の面会を正直に認める気色のない事を悟った。私はこの時単に先生の冷淡に驚いただけであった。
+        </p>
 
-      <p>それから四、五日経って、もう帰るという時になって、先生は突然私に向って、私の読んでいる本について聞いた。先生は私の手許にある本の題を見て、「君はドイツ語を勉強するのかね」と尋ねた。私は第二学年の独乙語の試験を受けなければならないので、読んでいるのだと答えた。先生は笑って、「ドイツ語は六かしいだろう」といった。私は黙っていた。先生は更に、「もう東京へ帰るのかね」と聞いた。私がそうだと返事をすると、先生は「また遊びに来たまえ」といった。私はそのままその言葉を信じて、先生の宅を訪ねることにした。</p>
+        <p>
+          それから四、五日経って、もう帰るという時になって、先生は突然私に向って、私の読んでいる本について聞いた。先生は私の手許にある本の題を見て、「君はドイツ語を勉強するのかね」と尋ねた。私は第二学年の独乙語の試験を受けなければならないので、読んでいるのだと答えた。先生は笑って、「ドイツ語は六かしいだろう」といった。私は黙っていた。先生は更に、「もう東京へ帰るのかね」と聞いた。私がそうだと返事をすると、先生は「また遊びに来たまえ」といった。私はそのままその言葉を信じて、先生の宅を訪ねることにした。
+        </p>
 
-      <h2>二</h2>
+        <h2>二</h2>
 
-      <p>その時私はまだ二十歳前後の若者であった。けれども先生という人は、私から見ると既に老人であった。先生には頭の毛が全くなかった。その代り髭が立派に生えていた。私は先生の髭だけを見ても十分老人という感じを受け取る事が出来た。それで私は先生を非常に尊敬した。先生が非常に尊敬すべき人間であるという事実を、私は後になって始めて承知したのであるけれども、頭の禿げた事と髭の立派な事とは、私に取って先生の人格に一種の信用を与えるものとして認められた。</p>
+        <p>
+          その時私はまだ二十歳前後の若者であった。けれども先生という人は、私から見ると既に老人であった。先生には頭の毛が全くなかった。その代り髭が立派に生えていた。私は先生の髭だけを見ても十分老人という感じを受け取る事が出来た。それで私は先生を非常に尊敬した。先生が非常に尊敬すべき人間であるという事実を、私は後になって始めて承知したのであるけれども、頭の禿げた事と髭の立派な事とは、私に取って先生の人格に一種の信用を与えるものとして認められた。
+        </p>
 
-      <p>先生はずっと若く見える細君を連れて鎌倉の或る寺に間借りをしていた。私はその寺の門前を通る時に、先生夫婦の姿をよく目撃した。彼らは大抵一所に行動していた。そうしてどこへ行くのだか私には分らなかった。私の宿は海岸に近かった。しかし先生の宿はそうでなかった。それでも私は毎日のように浜辺で先生に出会った。先生は大抵きまった時刻に浜へ出た。そうして大抵きまった時刻に帰った。私は偶然それを二、三度繰り返しているうちに、先生の習慣に気が付いた。その時私は先生に話しかけたくなった。しかしこっちは若いものの事だから、ただ挨拶ばかりして別れてしまうのが常であった。</p>
+        <p>
+          先生はずっと若く見える細君を連れて鎌倉の或る寺に間借りをしていた。私はその寺の門前を通る時に、先生夫婦の姿をよく目撃した。彼らは大抵一所に行動していた。そうしてどこへ行くのだか私には分らなかった。私の宿は海岸に近かった。しかし先生の宿はそうでなかった。それでも私は毎日のように浜辺で先生に出会った。先生は大抵きまった時刻に浜へ出た。そうして大抵きまった時刻に帰った。私は偶然それを二、三度繰り返しているうちに、先生の習慣に気が付いた。その時私は先生に話しかけたくなった。しかしこっちは若いものの事だから、ただ挨拶ばかりして別れてしまうのが常であった。
+        </p>
 
-      <p>先生はいつも同じ場所で海に入った。私も亦いつもの通り同じ場所で海に入った。先生は全く閑静な人であった。私はその近辺にいる人たちのように、決して派手な泳ぎ方をしなかった。先生も全く地味な泳ぎ方をした。先生は波の遠くへ出て行っては、長い間どこにいるのか分らないくらい、じっとしていることがあった。それから何の前触れもなく、突然私の前に頭を出すこともあった。</p>
+        <p>
+          先生はいつも同じ場所で海に入った。私も亦いつもの通り同じ場所で海に入った。先生は全く閑静な人であった。私はその近辺にいる人たちのように、決して派手な泳ぎ方をしなかった。先生も全く地味な泳ぎ方をした。先生は波の遠くへ出て行っては、長い間どこにいるのか分らないくらい、じっとしていることがあった。それから何の前触れもなく、突然私の前に頭を出すこともあった。
+        </p>
+      </div>
     </div>
-  </div>
 
-  <!-- フッター -->
-  <footer class="footer">
-    <h2>↑ Without Smoothing</h2>
-  </footer>
+    <!-- フッター -->
+    <footer class="footer">
+      <h2>↑ Without Smoothing</h2>
+    </footer>
 
-  <!-- モバイル用スピードコントロール -->
-  <div class="speed-control">
-    <input type="range" id="speedSlider" min="12" max="30" value="15" step="0.1">
-  </div>
+    <!-- モバイル用スピードコントロール -->
+    <div class="speed-control">
+      <input
+        type="range"
+        id="speedSlider"
+        min="12"
+        max="30"
+        value="15"
+        step="0.1"
+      />
+    </div>
 
-  <!-- SPEED表示（操作中のみ） -->
-  <div class="speed-label top" id="speedLabelTop">SPEED</div>
-  <div class="speed-label bottom" id="speedLabelBottom">15px/s</div>
+    <!-- SPEED表示（操作中のみ） -->
+    <div class="speed-label top" id="speedLabelTop">SPEED</div>
+    <div class="speed-label bottom" id="speedLabelBottom">15px/s</div>
 
-  <script type="module">
-    import createSmoothScroll from '../index.js';
+    <script type="module">
+      import createSmoothScroll from "../index.js";
 
-    // 補完あり（上段）- autoplay: true がデフォルトなので自動開始
-    const scrollerWith = createSmoothScroll({
-      target: '#container-with',            // スクロールするコンテナ
-      speed: 15,
-      interpolation: true,
-      bounce: true
-    });
+      // 補完あり（上段）- autoplay: true がデフォルトなので自動開始
+      const scrollerWith = createSmoothScroll({
+        target: "#container-with", // スクロールするコンテナ
+        speed: 15,
+        interpolation: true,
+        bounce: true,
+      });
 
-    // 補完なし（下段）- autoplay: true がデフォルトなので自動開始
-    const scrollerWithout = createSmoothScroll({
-      target: '#container-without',            // スクロールするコンテナ
-      speed: 15,
-      interpolation: false,
-      bounce: true
-    });
+      // 補完なし（下段）- autoplay: true がデフォルトなので自動開始
+      const scrollerWithout = createSmoothScroll({
+        target: "#container-without", // スクロールするコンテナ
+        speed: 15,
+        interpolation: false,
+        bounce: true,
+      });
 
-    // スピードコントロール
-    const speedSlider = document.getElementById('speedSlider');
-    const speedLabelTop = document.getElementById('speedLabelTop');
-    const speedLabelBottom = document.getElementById('speedLabelBottom');
+      // スピードコントロール
+      const speedSlider = document.getElementById("speedSlider");
+      const speedLabelTop = document.getElementById("speedLabelTop");
+      const speedLabelBottom = document.getElementById("speedLabelBottom");
 
-    // レインボー位置を更新（軽量化版・逆方向）
-    const updateRainbowPosition = (speed) => {
-      const pos = 200 - ((speed - 12) / 18) * 200; // 12-30 → 200-0%（逆方向）
-      speedLabelTop.style.setProperty('--rainbow-pos', `${pos}%`);
-      speedLabelBottom.style.setProperty('--rainbow-pos', `${pos}%`);
-    };
+      // レインボー位置を更新（軽量化版・逆方向）
+      const updateRainbowPosition = (speed) => {
+        const pos = 200 - ((speed - 12) / 18) * 200; // 12-30 → 200-0%（逆方向）
+        speedLabelTop.style.setProperty("--rainbow-pos", `${pos}%`);
+        speedLabelBottom.style.setProperty("--rainbow-pos", `${pos}%`);
+      };
 
-    // 初期表示を設定
-    updateRainbowPosition(parseFloat(speedSlider.value));
+      // 初期表示を設定
+      updateRainbowPosition(parseFloat(speedSlider.value));
 
-    // 操作開始
-    const showSpeedLabels = () => {
-      speedLabelTop.classList.add('active');
-      speedLabelBottom.classList.add('active');
-    };
+      // 操作開始
+      const showSpeedLabels = () => {
+        speedLabelTop.classList.add("active");
+        speedLabelBottom.classList.add("active");
+      };
 
-    // 操作終了
-    const hideSpeedLabels = () => {
-      speedLabelTop.classList.remove('active');
-      speedLabelBottom.classList.remove('active');
-    };
+      // 操作終了
+      const hideSpeedLabels = () => {
+        speedLabelTop.classList.remove("active");
+        speedLabelBottom.classList.remove("active");
+      };
 
-    // 値変更
-    speedSlider.addEventListener('input', () => {
-      const speed = parseFloat(speedSlider.value);
-      
-      // 表示を更新
-      speedLabelBottom.textContent = `${speed.toFixed(1)}px/s`;
-      
-      // 両方のスクローラーのスピードを更新
-      scrollerWith.setSpeed(speed);
-      scrollerWithout.setSpeed(speed);
-      
-      // レインボー位置を同期
-      updateRainbowPosition(speed);
-    });
+      // 値変更
+      speedSlider.addEventListener("input", () => {
+        const speed = parseFloat(speedSlider.value);
 
-    // 表示イベント
-    speedSlider.addEventListener('mouseenter', showSpeedLabels);
-    speedSlider.addEventListener('mousedown', showSpeedLabels);
-    speedSlider.addEventListener('touchstart', showSpeedLabels);
+        // 表示を更新
+        speedLabelBottom.textContent = `${speed.toFixed(1)}px/s`;
 
-    // 非表示イベント
-    speedSlider.addEventListener('mouseleave', hideSpeedLabels);
-    speedSlider.addEventListener('mouseup', hideSpeedLabels);
-    speedSlider.addEventListener('touchend', hideSpeedLabels);
-  </script>
-</body>
+        // 両方のスクローラーのスピードを更新
+        scrollerWith.setSpeed(speed);
+        scrollerWithout.setSpeed(speed);
+
+        // レインボー位置を同期
+        updateRainbowPosition(speed);
+      });
+
+      // 表示イベント
+      speedSlider.addEventListener("mouseenter", showSpeedLabels);
+      speedSlider.addEventListener("mousedown", showSpeedLabels);
+      speedSlider.addEventListener("touchstart", showSpeedLabels);
+
+      // 非表示イベント
+      speedSlider.addEventListener("mouseleave", hideSpeedLabels);
+      speedSlider.addEventListener("mouseup", hideSpeedLabels);
+      speedSlider.addEventListener("touchend", hideSpeedLabels);
+    </script>
+  </body>
 </html>

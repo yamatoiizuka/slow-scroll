@@ -1,0 +1,21 @@
+# Demo and development files
+demo/
+dist/
+
+# Version control
+.git/
+.github/
+
+# IDE and system files
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Test files
+test/
+tests/
+*.test.js
+*.spec.js

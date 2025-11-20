@@ -3,7 +3,18 @@
   "version": "0.0.1",
   "description": "Super Slow Smooth Scroll",
   "main": "index.js",
+  "module": "index.js",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "README.md"
+  ],
   "keywords": [
     "smooth-scroll",
     "slow-scroll",
