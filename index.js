@@ -24,6 +24,19 @@ const DEFAULTS = {
 
 const VALID_DIRECTIONS = ["up", "down", "left", "right"];
 const SCROLL_AMOUNT = 1; // Fixed at 1px for Safari compatibility
+const USER_SCROLL_TIMEOUT = 0; // Time in ms to wait before resuming auto-scroll
+
+// ========================================
+// Helper Functions
+// ========================================
+
+/**
+ * Detect iOS and iPadOS devices
+ * @returns {boolean} True if device is iOS or iPadOS
+ */
+function isIOSDevice() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent);
+}
 
 // ========================================
 // Main Function
@@ -144,6 +157,14 @@ export function createSlowScroll(options = {}) {
   let scrollContainer = null; // The actual scrollable container (element or window)
   let transformTarget = null; // The element to apply transform to (same as scrollContainer for elements)
 
+  // User scroll detection state (iOS/iPadOS only)
+  let userScrollTimer = null;
+  let isUserScrolling = false;
+  let userScrollHandler = null;
+  let isAutoScrolling = false; // Flag to distinguish auto-scroll from user scroll
+  let lastScrollPosition = 0; // Track scroll position to detect user scrolling
+  let scrollStepFn = null; // Reference to scrollStep function for resuming
+
   /**
    * Helper functions to abstract scrolling operations
    */
@@ -174,6 +195,9 @@ export function createSlowScroll(options = {}) {
 
     // Perform scroll
     scrollBy: (amount) => {
+      // Mark as auto-scrolling to distinguish from user scroll
+      isAutoScrolling = true;
+
       if (scrollContainer === window) {
         if (isVertical) {
           window.scrollBy(0, amount);
@@ -187,6 +211,14 @@ export function createSlowScroll(options = {}) {
           scrollContainer.scrollLeft += amount;
         }
       }
+
+      // Update last scroll position immediately after scrolling
+      lastScrollPosition = scrollHelpers.getScrollPosition();
+
+      // Reset flag on next animation frame to ensure scroll event has fired
+      requestAnimationFrame(() => {
+        isAutoScrolling = false;
+      });
     },
   };
 
@@ -259,6 +291,7 @@ export function createSlowScroll(options = {}) {
     }
 
     lastScrollTime = null;
+    lastScrollPosition = scrollHelpers.getScrollPosition();
 
     function scrollStep(currentTime) {
       // Initialize on first frame
@@ -355,7 +388,57 @@ export function createSlowScroll(options = {}) {
       animationId = requestAnimationFrame(scrollStep);
     }
 
+    // Store reference to scrollStep for resuming after user scroll
+    scrollStepFn = scrollStep;
+
     animationId = requestAnimationFrame(scrollStep);
+
+    // Setup user scroll detection for iOS/iPadOS
+    if (isIOSDevice()) {
+      userScrollHandler = function handleUserScroll() {
+        // Ignore scroll events triggered by auto-scrolling
+        if (isAutoScrolling) {
+          return;
+        }
+
+        // Detect if this is a user-initiated scroll
+        const currentScroll = scrollHelpers.getScrollPosition();
+        const scrollDelta = Math.abs(currentScroll - lastScrollPosition);
+
+        // Only react if scroll change is larger than auto-scroll amount
+        // This helps distinguish user scrolling from auto-scrolling
+        if (scrollDelta > config.scrollAmount * 2) {
+          // If not already paused by user scroll
+          if (!isUserScrolling && animationId !== null) {
+            isUserScrolling = true;
+            // Pause auto-scroll
+            cancelAnimationFrame(animationId);
+            animationId = null;
+          }
+
+          // Clear existing timer
+          if (userScrollTimer) {
+            clearTimeout(userScrollTimer);
+          }
+
+          // Set timer to resume auto-scroll after user stops scrolling
+          userScrollTimer = setTimeout(() => {
+            if (isUserScrolling) {
+              isUserScrolling = false;
+              // Resume auto-scroll
+              lastScrollTime = null;
+              lastScrollPosition = scrollHelpers.getScrollPosition();
+              animationId = requestAnimationFrame(scrollStepFn);
+            }
+          }, USER_SCROLL_TIMEOUT);
+        }
+      };
+
+      // Attach scroll event listener
+      scrollContainer.addEventListener("scroll", userScrollHandler, {
+        passive: true,
+      });
+    }
   }
 
   /**
@@ -373,6 +456,19 @@ export function createSlowScroll(options = {}) {
         transformTarget.style.willChange = "auto";
         transformTarget.style.backfaceVisibility = "visible";
       }
+
+      // Cleanup user scroll detection (iOS/iPadOS)
+      if (userScrollHandler && scrollContainer) {
+        scrollContainer.removeEventListener("scroll", userScrollHandler);
+        userScrollHandler = null;
+      }
+      if (userScrollTimer) {
+        clearTimeout(userScrollTimer);
+        userScrollTimer = null;
+      }
+      isUserScrolling = false;
+      isAutoScrolling = false;
+      scrollStepFn = null;
 
       targetElement = null;
       scrollContainer = null;
