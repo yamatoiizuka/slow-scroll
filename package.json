@@ -1,6 +1,6 @@
 {
   "name": "slow-scroll",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Super Slow Smooth Scroll",
   "main": "index.js",
   "module": "index.js",
