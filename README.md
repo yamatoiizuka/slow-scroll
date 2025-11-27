@@ -114,6 +114,36 @@ const scroller = createSlowScroll({
 // Starts automatically
 ```
 
+### Dynamic Speed Control
+
+```javascript
+const scroller = createSlowScroll({
+  target: ".content",
+  speed: 30,
+});
+
+// Change speed dynamically (automatically restarts if running)
+scroller.setSpeed(50); // Speed up to 50px/s
+scroller.setSpeed(15); // Slow down to 15px/s
+
+// Example: Speed control with buttons
+document.getElementById("speedUpBtn").addEventListener("click", () => {
+  const config = scroller.getConfig();
+  scroller.setSpeed(config.speed + 10);
+});
+
+document.getElementById("slowDownBtn").addEventListener("click", () => {
+  const config = scroller.getConfig();
+  scroller.setSpeed(Math.max(5, config.speed - 10)); // Minimum 5px/s
+});
+```
+
+**Notes:**
+
+- `speed` directly controls pixels per second (e.g., `speed: 24` = 24px/second)
+- When `bounce` is `false`, scrolling stops when reaching page boundaries
+- When `bounce` is `true`, scroll direction automatically reverses at boundaries
+
 ### Without Interpolation (Compare Performance)
 
 ```javascript
@@ -141,11 +171,31 @@ const config = scroller.getConfig();
 console.log(`Speed: ${config.speed}px/s, Direction: ${config.direction}`);
 ```
 
-**Notes:**
+## API Reference
 
-- `speed` directly controls pixels per second (e.g., `speed: 24` = 24px/second)
-- When `bounce` is `false`, scrolling stops when reaching page boundaries
-- When `bounce` is `true`, scroll direction automatically reverses at boundaries
+### Methods
+
+| Method | Parameters | Returns | Description |
+|--------|-----------|---------|-------------|
+| `start()` | None | `void` | Starts the auto-scrolling. Does nothing if already running. |
+| `stop()` | None | `void` | Stops the auto-scrolling and resets transform states. |
+| `setSpeed(newSpeed)` | `newSpeed: number` | `void` | Updates scroll speed in pixels per second. Automatically restarts if running. |
+| `isRunning()` | None | `boolean` | Returns `true` if currently scrolling, `false` otherwise. |
+| `getConfig()` | None | `object` | Returns a copy of the current configuration object. |
+
+### Configuration Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `target` | `string \| HTMLElement` | **Required** | CSS selector or DOM element of the scrollable container. |
+| `interpolationTarget` | `string \| HTMLElement` | `null` | CSS selector or DOM element to apply interpolation transform. If not specified, uses `target` for window scrolling, or the scrollable container itself for element scrolling. |
+| `speed` | `number` | `30` | Scroll speed in pixels per second. |
+| `interpolation` | `boolean` | `true` | Enable transform interpolation for smooth visual experience. |
+| `bounce` | `boolean` | `false` | Reverse scroll direction when reaching boundaries. |
+| `direction` | `string` | `'down'` | Scroll direction: `'up'`, `'down'`, `'left'`, or `'right'`. |
+| `autoplay` | `boolean` | `true` | Start scrolling automatically when instance is created. |
+| `onDirectionChange` | `function` | `null` | Callback function called when scroll direction changes (with bounce enabled). Receives new direction as parameter. |
+| `onBoundaryReached` | `function` | `null` | Callback function called when boundary is reached (with bounce disabled). Receives boundary type as parameter. |
 
 ## Development
 
