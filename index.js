@@ -417,28 +417,13 @@ export function createSlowScroll(options = {}) {
         // Update last scroll time
         lastScrollTime = currentTime;
       } else if (config.interpolation && transformTarget) {
-        // Check if we're at the boundary opposite to scroll direction
-        // to prevent interpolation from causing jitter with momentum scrolling
+        // Check if we're at the boundary to prevent interpolation jitter
         const maxScroll = scrollHelpers.getMaxScroll();
         const currentScroll = scrollHelpers.getScrollPosition();
 
-        let shouldSkipInterpolation = false;
-
-        // If scrolling down (direction = 1), skip interpolation at top (position near 0)
-        // If scrolling up (direction = -1), skip interpolation at bottom (position near maxScroll)
-        if (isVertical) {
-          if (scrollDirection === 1 && currentScroll <= 1) {
-            shouldSkipInterpolation = true;
-          } else if (scrollDirection === -1 && currentScroll >= maxScroll - 1) {
-            shouldSkipInterpolation = true;
-          }
-        } else if (isHorizontal) {
-          if (scrollDirection === 1 && currentScroll <= 1) {
-            shouldSkipInterpolation = true;
-          } else if (scrollDirection === -1 && currentScroll >= maxScroll - 1) {
-            shouldSkipInterpolation = true;
-          }
-        }
+        // Skip interpolation at boundaries (start = 0 or end = maxScroll)
+        const shouldSkipInterpolation =
+          currentScroll === 0 || currentScroll >= maxScroll - 1;
 
         if (!shouldSkipInterpolation) {
           // Intermediate frames: interpolate with transform (only if enabled)
@@ -453,7 +438,7 @@ export function createSlowScroll(options = {}) {
             transformTarget.style.transform = `translate3d(${-interpolation}px, 0, 0)`;
           }
         } else {
-          // At opposite boundary, keep transform at zero to prevent jitter
+          // At boundary, keep transform at zero to prevent jitter
           transformTarget.style.transform = "translate3d(0, 0, 0)";
         }
       }
