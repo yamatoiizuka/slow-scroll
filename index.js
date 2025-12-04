@@ -20,12 +20,12 @@ const DEFAULTS = {
   autoplay: true, // Start scrolling automatically on creation
   pauseOnTouch: false, // Pause scrolling when user touches the scroll area
   pauseOnMouseMove: false, // Pause scrolling when mouse is moving over the scroll area
+  userScrollResumeDelay: 100, // Time in ms to wait before resuming auto-scroll after user scrolling (iOS/iPadOS)
   onDirectionChange: null,
   onBoundaryReached: null,
 };
 
 const SCROLL_AMOUNT = 1; // Fixed at 1px for Safari compatibility
-const USER_SCROLL_TIMEOUT = 0; // Time in ms to wait before resuming auto-scroll
 
 // ========================================
 // Helper Functions
@@ -56,6 +56,7 @@ function isIOSDevice() {
  * @param {boolean} [options.autoplay=true] - Start scrolling automatically on creation
  * @param {boolean} [options.pauseOnTouch=false] - Pause scrolling when user touches the scroll area
  * @param {boolean} [options.pauseOnMouseMove=false] - Pause scrolling when mouse is moving over the scroll area
+ * @param {number} [options.userScrollResumeDelay=100] - Time in ms to wait before resuming auto-scroll after user scrolling (iOS/iPadOS only)
  * @param {Function} [options.onDirectionChange] - Callback when scroll direction changes
  * @param {Function} [options.onBoundaryReached] - Callback when boundary is reached (if bounce is false)
  * @returns {Object} Instance with start() and stop() methods
@@ -127,6 +128,8 @@ export function createSlowScroll(options = {}) {
     autoplay: options.autoplay ?? DEFAULTS.autoplay,
     pauseOnTouch: options.pauseOnTouch ?? DEFAULTS.pauseOnTouch,
     pauseOnMouseMove: options.pauseOnMouseMove ?? DEFAULTS.pauseOnMouseMove,
+    userScrollResumeDelay:
+      options.userScrollResumeDelay ?? DEFAULTS.userScrollResumeDelay,
     onDirectionChange: options.onDirectionChange ?? DEFAULTS.onDirectionChange,
     onBoundaryReached: options.onBoundaryReached ?? DEFAULTS.onBoundaryReached,
   };
@@ -521,7 +524,7 @@ export function createSlowScroll(options = {}) {
               lastScrollPosition = scrollHelpers.getScrollPosition();
               animationId = requestAnimationFrame(scrollStepFn);
             }
-          }, USER_SCROLL_TIMEOUT);
+          }, config.userScrollResumeDelay);
         }
       };
 

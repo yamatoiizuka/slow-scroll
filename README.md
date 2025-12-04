@@ -232,6 +232,7 @@ console.log(`Speed: ${config.speed}px/s, Horizontal: ${config.isHorizontal}`);
 | `autoplay`            | `boolean`               | `true`       | Start scrolling automatically when instance is created.                                                                                                                       |
 | `pauseOnTouch`        | `boolean`               | `false`      | Pause scrolling when user touches the scroll area (useful for mobile).                                                                                                        |
 | `pauseOnMouseMove`    | `boolean`               | `false`      | Pause scrolling when mouse is moving over the scroll area.                                                                                                                    |
+| `userScrollResumeDelay` | `number`              | `100`        | Time in milliseconds to wait before resuming auto-scroll after user scrolling stops (iOS/iPadOS only). Increase if momentum scrolling feels interrupted.                     |
 | `onDirectionChange`   | `function`              | `null`       | Callback function called when scroll direction changes (with bounce enabled). Receives new direction as parameter.                                                            |
 | `onBoundaryReached`   | `function`              | `null`       | Callback function called when boundary is reached (with bounce disabled). Receives boundary type as parameter.                                                                |
 
