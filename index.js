@@ -5,7 +5,7 @@
  * with high-frequency CSS transform interpolation for smooth visual experience.
  *
  * @author Yamato Iizuka
- * @version 1.3.0
+ * @version 0.0.2
  * @license MIT
  */
 
@@ -13,16 +13,17 @@
 // Default Configuration
 // ========================================
 const DEFAULTS = {
-  speed: 30, // Pixels per second
+  speed: 30, // Pixels per second (positive = down/right, negative = up/left)
   interpolation: true, // Enable transform interpolation
   bounce: false, // Reverse direction at boundaries
-  direction: "down", // Scroll direction: 'up', 'down', 'left', 'right'
+  isHorizontal: false, // Scroll horizontally instead of vertically
   autoplay: true, // Start scrolling automatically on creation
+  pauseOnTouch: false, // Pause scrolling when user touches the scroll area
+  pauseOnMouseMove: false, // Pause scrolling when mouse is moving over the scroll area
   onDirectionChange: null,
   onBoundaryReached: null,
 };
 
-const VALID_DIRECTIONS = ["up", "down", "left", "right"];
 const SCROLL_AMOUNT = 1; // Fixed at 1px for Safari compatibility
 const USER_SCROLL_TIMEOUT = 0; // Time in ms to wait before resuming auto-scroll
 
@@ -48,11 +49,13 @@ function isIOSDevice() {
  * @param {Object} options - Configuration options
  * @param {string|HTMLElement} options.target - CSS selector or DOM element of scrollable container (required)
  * @param {string|HTMLElement} [options.interpolationTarget] - CSS selector or DOM element to apply interpolation transform (optional, defaults to target)
- * @param {number} [options.speed=30] - Scroll speed in pixels per second
+ * @param {number} [options.speed=30] - Scroll speed in pixels per second (positive = down/right, negative = up/left)
  * @param {boolean} [options.interpolation=true] - Enable transform interpolation for smoothness
  * @param {boolean} [options.bounce=false] - Reverse direction when reaching boundaries
- * @param {string} [options.direction='down'] - Scroll direction: 'up', 'down', 'left', 'right'
+ * @param {boolean} [options.isHorizontal=false] - Scroll horizontally instead of vertically
  * @param {boolean} [options.autoplay=true] - Start scrolling automatically on creation
+ * @param {boolean} [options.pauseOnTouch=false] - Pause scrolling when user touches the scroll area
+ * @param {boolean} [options.pauseOnMouseMove=false] - Pause scrolling when mouse is moving over the scroll area
  * @param {Function} [options.onDirectionChange] - Callback when scroll direction changes
  * @param {Function} [options.onBoundaryReached] - Callback when boundary is reached (if bounce is false)
  * @returns {Object} Instance with start() and stop() methods
@@ -102,56 +105,48 @@ export function createSlowScroll(options = {}) {
     );
   }
 
-  // Validate direction
-  const direction = options.direction ?? DEFAULTS.direction;
-  if (!VALID_DIRECTIONS.includes(direction)) {
-    throw new Error(
-      `SmoothScroll: Invalid direction "${direction}". Must be one of: ${VALID_DIRECTIONS.join(
-        ", "
-      )}`
-    );
-  }
-
-  // Speed in pixels per second
+  // Speed in pixels per second (can be negative to reverse direction)
   const speed = options.speed ?? DEFAULTS.speed;
+  const absSpeed = Math.abs(speed);
 
   // For Safari compatibility: always scroll 1px per update
   // Calculate FPS based on desired speed (speed px/s = fps * 1px)
-  const fps = speed / SCROLL_AMOUNT;
+  const fps = absSpeed / SCROLL_AMOUNT;
 
   // Configuration
   const config = {
     target: options.target,
     interpolationTarget: options.interpolationTarget ?? null, // null means use target
     speed: speed,
+    absSpeed: absSpeed,
     fps: fps,
     scrollAmount: SCROLL_AMOUNT,
     interpolation: options.interpolation ?? DEFAULTS.interpolation,
     bounce: options.bounce ?? DEFAULTS.bounce,
-    direction: direction,
+    isHorizontal: options.isHorizontal ?? DEFAULTS.isHorizontal,
     autoplay: options.autoplay ?? DEFAULTS.autoplay,
+    pauseOnTouch: options.pauseOnTouch ?? DEFAULTS.pauseOnTouch,
+    pauseOnMouseMove: options.pauseOnMouseMove ?? DEFAULTS.pauseOnMouseMove,
     onDirectionChange: options.onDirectionChange ?? DEFAULTS.onDirectionChange,
     onBoundaryReached: options.onBoundaryReached ?? DEFAULTS.onBoundaryReached,
   };
 
   // Helper function to get current frame interval
-  const getFrameInterval = () => 1000 / config.fps;
-
-  // Determine axis and initial direction based on config
-  const isVertical = config.direction === "up" || config.direction === "down";
-  const isHorizontal =
-    config.direction === "left" || config.direction === "right";
-
-  // Initial scroll direction: 1 for down/right, -1 for up/left
-  const getInitialDirection = () => {
-    if (config.direction === "down" || config.direction === "right") return 1;
-    if (config.direction === "up" || config.direction === "left") return -1;
-    return 1;
+  const getFrameInterval = () => {
+    if (config.fps === 0) return Infinity;
+    return 1000 / config.fps;
   };
+
+  // Determine axis based on config
+  const isVertical = !config.isHorizontal;
+  const isHorizontal = config.isHorizontal;
+
+  // Scroll direction: positive speed = 1 (down/right), negative speed = -1 (up/left)
+  const getScrollDirection = (speedValue) => (speedValue >= 0 ? 1 : -1);
 
   // State
   let animationId = null;
-  let scrollDirection = getInitialDirection();
+  let scrollDirection = getScrollDirection(speed);
   let lastScrollTime = null;
   let targetElement = null;
   let scrollContainer = null; // The actual scrollable container (element or window)
@@ -164,6 +159,19 @@ export function createSlowScroll(options = {}) {
   let isAutoScrolling = false; // Flag to distinguish auto-scroll from user scroll
   let lastScrollPosition = 0; // Track scroll position to detect user scrolling
   let scrollStepFn = null; // Reference to scrollStep function for resuming
+
+  // Touch event detection state
+  let isTouching = false;
+  let touchStartHandler = null;
+  let touchEndHandler = null;
+
+  // Mouse move detection state
+  let isMouseMoving = false;
+  let mouseMoveHandler = null;
+  let mouseMoveTimer = null;
+
+  // Overscroll detection state
+  let wasInOverscroll = false;
 
   /**
    * Helper functions to abstract scrolling operations
@@ -226,9 +234,13 @@ export function createSlowScroll(options = {}) {
    * Start the smooth scrolling
    */
   function start() {
+    // If speed is 0, don't start
+    if (config.speed === 0) {
+      return;
+    }
+
     // Already running
     if (animationId !== null) {
-      console.warn("SmoothScroll: Already running");
       return;
     }
 
@@ -294,6 +306,41 @@ export function createSlowScroll(options = {}) {
     lastScrollPosition = scrollHelpers.getScrollPosition();
 
     function scrollStep(currentTime) {
+      // Pause if user is touching and pauseOnTouch is enabled
+      if (config.pauseOnTouch && isTouching) {
+        // Reset lastScrollTime to prevent time accumulation during pause
+        lastScrollTime = null;
+        animationId = requestAnimationFrame(scrollStep);
+        return;
+      }
+
+      // Pause if mouse is moving and pauseOnMouseMove is enabled
+      if (config.pauseOnMouseMove && isMouseMoving) {
+        // Reset lastScrollTime to prevent time accumulation during pause
+        lastScrollTime = null;
+        animationId = requestAnimationFrame(scrollStep);
+        return;
+      }
+
+      // Check for WebKit elastic scroll (overscroll/bounce)
+      // If scroll position is out of valid range, pause to prevent jitter
+      const maxScroll = scrollHelpers.getMaxScroll();
+      const currentScroll = scrollHelpers.getScrollPosition();
+      const isInOverscroll = currentScroll < 0 || currentScroll > maxScroll;
+
+      if (isInOverscroll) {
+        // In overscroll state (WebKit elastic bounce)
+        wasInOverscroll = true;
+        // Reset lastScrollTime to prevent time accumulation during pause
+        lastScrollTime = null;
+        animationId = requestAnimationFrame(scrollStep);
+        return;
+      } else if (wasInOverscroll) {
+        // Just returned from overscroll, reset state
+        wasInOverscroll = false;
+        lastScrollTime = null;
+      }
+
       // Initialize on first frame
       if (lastScrollTime === null) {
         lastScrollTime = currentTime;
@@ -307,9 +354,6 @@ export function createSlowScroll(options = {}) {
         // Boundary check based on direction
         let atBoundary = false;
         let boundaryType = null;
-
-        const maxScroll = scrollHelpers.getMaxScroll();
-        const currentScroll = scrollHelpers.getScrollPosition();
 
         if (isVertical) {
           // Check if reached bottom
@@ -373,15 +417,44 @@ export function createSlowScroll(options = {}) {
         // Update last scroll time
         lastScrollTime = currentTime;
       } else if (config.interpolation && transformTarget) {
-        // Intermediate frames: interpolate with transform (only if enabled)
-        const progress = elapsed / frameInterval; // 0-1
-        const interpolation = config.scrollAmount * progress * scrollDirection;
+        // Check if we're at the boundary opposite to scroll direction
+        // to prevent interpolation from causing jitter with momentum scrolling
+        const maxScroll = scrollHelpers.getMaxScroll();
+        const currentScroll = scrollHelpers.getScrollPosition();
 
-        // Apply transform in opposite direction (pre-compensate for next scroll)
+        let shouldSkipInterpolation = false;
+
+        // If scrolling down (direction = 1), skip interpolation at top (position near 0)
+        // If scrolling up (direction = -1), skip interpolation at bottom (position near maxScroll)
         if (isVertical) {
-          transformTarget.style.transform = `translate3d(0, ${-interpolation}px, 0)`;
+          if (scrollDirection === 1 && currentScroll <= 1) {
+            shouldSkipInterpolation = true;
+          } else if (scrollDirection === -1 && currentScroll >= maxScroll - 1) {
+            shouldSkipInterpolation = true;
+          }
+        } else if (isHorizontal) {
+          if (scrollDirection === 1 && currentScroll <= 1) {
+            shouldSkipInterpolation = true;
+          } else if (scrollDirection === -1 && currentScroll >= maxScroll - 1) {
+            shouldSkipInterpolation = true;
+          }
+        }
+
+        if (!shouldSkipInterpolation) {
+          // Intermediate frames: interpolate with transform (only if enabled)
+          const progress = elapsed / frameInterval; // 0-1
+          const interpolation =
+            config.scrollAmount * progress * scrollDirection;
+
+          // Apply transform in opposite direction (pre-compensate for next scroll)
+          if (isVertical) {
+            transformTarget.style.transform = `translate3d(0, ${-interpolation}px, 0)`;
+          } else {
+            transformTarget.style.transform = `translate3d(${-interpolation}px, 0, 0)`;
+          }
         } else {
-          transformTarget.style.transform = `translate3d(${-interpolation}px, 0, 0)`;
+          // At opposite boundary, keep transform at zero to prevent jitter
+          transformTarget.style.transform = "translate3d(0, 0, 0)";
         }
       }
 
@@ -424,7 +497,40 @@ export function createSlowScroll(options = {}) {
           // Set timer to resume auto-scroll after user stops scrolling
           userScrollTimer = setTimeout(() => {
             if (isUserScrolling) {
+              // Check if scroll position is in valid range before resuming
+              // This prevents resuming during elastic bounce on iOS
+              const currentPosition = scrollHelpers.getScrollPosition();
+              const maxScroll = scrollHelpers.getMaxScroll();
+              const isInValidRange =
+                currentPosition >= 0 && currentPosition <= maxScroll;
+
+              // Only resume if in valid range (not in overscroll/bounce)
+              if (!isInValidRange) {
+                // Still in bounce, don't resume yet
+                // Next scroll event will trigger timer again
+                return;
+              }
+
               isUserScrolling = false;
+
+              // Cancel any remaining momentum scroll by forcing scroll position
+              // Only do this if user is not currently touching (to avoid disrupting bounce)
+              if (!isTouching) {
+                if (scrollContainer === window) {
+                  if (isVertical) {
+                    window.scrollTo(window.scrollX, currentPosition);
+                  } else {
+                    window.scrollTo(currentPosition, window.scrollY);
+                  }
+                } else {
+                  if (isVertical) {
+                    scrollContainer.scrollTop = currentPosition;
+                  } else {
+                    scrollContainer.scrollLeft = currentPosition;
+                  }
+                }
+              }
+
               // Resume auto-scroll
               lastScrollTime = null;
               lastScrollPosition = scrollHelpers.getScrollPosition();
@@ -436,6 +542,54 @@ export function createSlowScroll(options = {}) {
 
       // Attach scroll event listener
       scrollContainer.addEventListener("scroll", userScrollHandler, {
+        passive: true,
+      });
+    }
+
+    // Setup touch event detection
+    if (config.pauseOnTouch) {
+      touchStartHandler = function handleTouchStart() {
+        isTouching = true;
+      };
+
+      touchEndHandler = function handleTouchEnd() {
+        isTouching = false;
+      };
+
+      // Attach touch event listeners
+      const touchTarget =
+        scrollContainer === window ? document.body : scrollContainer;
+      touchTarget.addEventListener("touchstart", touchStartHandler, {
+        passive: true,
+      });
+      touchTarget.addEventListener("touchend", touchEndHandler, {
+        passive: true,
+      });
+      touchTarget.addEventListener("touchcancel", touchEndHandler, {
+        passive: true,
+      });
+    }
+
+    // Setup mouse move detection
+    if (config.pauseOnMouseMove) {
+      mouseMoveHandler = function handleMouseMove() {
+        isMouseMoving = true;
+
+        // Clear existing timer
+        if (mouseMoveTimer) {
+          clearTimeout(mouseMoveTimer);
+        }
+
+        // Set timer to resume auto-scroll after mouse stops moving
+        mouseMoveTimer = setTimeout(() => {
+          isMouseMoving = false;
+        }, 150); // Resume 150ms after mouse stops
+      };
+
+      // Attach mousemove event listener
+      const mouseTarget =
+        scrollContainer === window ? document.body : scrollContainer;
+      mouseTarget.addEventListener("mousemove", mouseMoveHandler, {
         passive: true,
       });
     }
@@ -470,6 +624,38 @@ export function createSlowScroll(options = {}) {
       isAutoScrolling = false;
       scrollStepFn = null;
 
+      // Cleanup touch event listeners
+      if (touchStartHandler || touchEndHandler) {
+        const touchTarget =
+          scrollContainer === window ? document.body : scrollContainer;
+        if (touchStartHandler) {
+          touchTarget.removeEventListener("touchstart", touchStartHandler);
+          touchStartHandler = null;
+        }
+        if (touchEndHandler) {
+          touchTarget.removeEventListener("touchend", touchEndHandler);
+          touchTarget.removeEventListener("touchcancel", touchEndHandler);
+          touchEndHandler = null;
+        }
+      }
+      isTouching = false;
+
+      // Cleanup mouse move listeners
+      if (mouseMoveHandler && scrollContainer) {
+        const mouseTarget =
+          scrollContainer === window ? document.body : scrollContainer;
+        mouseTarget.removeEventListener("mousemove", mouseMoveHandler);
+        mouseMoveHandler = null;
+      }
+      if (mouseMoveTimer) {
+        clearTimeout(mouseMoveTimer);
+        mouseMoveTimer = null;
+      }
+      isMouseMoving = false;
+
+      // Reset overscroll state
+      wasInOverscroll = false;
+
       targetElement = null;
       scrollContainer = null;
       transformTarget = null;
@@ -492,13 +678,11 @@ export function createSlowScroll(options = {}) {
 
   /**
    * Update scroll speed
-   * @param {number} newSpeed - New speed in pixels per second
+   * @param {number} newSpeed - New speed in pixels per second (can be 0 or negative)
    */
   function setSpeed(newSpeed) {
-    if (typeof newSpeed !== "number" || newSpeed <= 0) {
-      console.warn(
-        "SmoothScroll: Invalid speed value. Must be a positive number."
-      );
+    if (typeof newSpeed !== "number") {
+      console.warn("SmoothScroll: Invalid speed value. Must be a number.");
       return;
     }
 
@@ -510,11 +694,16 @@ export function createSlowScroll(options = {}) {
     }
 
     // Update config
+    const absSpeed = Math.abs(newSpeed);
     config.speed = newSpeed;
-    config.fps = newSpeed / SCROLL_AMOUNT;
+    config.absSpeed = absSpeed;
+    config.fps = absSpeed / SCROLL_AMOUNT;
 
-    // Restart if it was running
-    if (wasRunning) {
+    // Update scroll direction based on speed sign
+    scrollDirection = getScrollDirection(newSpeed);
+
+    // Restart if it was running and speed is not 0
+    if (wasRunning && newSpeed !== 0) {
       start();
     }
   }

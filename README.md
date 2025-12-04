@@ -41,10 +41,10 @@ import createSlowScroll from "slow-scroll";
 const scroller = createSlowScroll({
   target: ".content", // Scrollable container (required)
   interpolationTarget: ".inner", // Element to apply interpolation (optional, defaults to target)
-  speed: 30, // Pixels per second (default: 30)
+  speed: 30, // Pixels per second - positive = down/right, negative = up/left (default: 30)
   interpolation: true, // Enable interpolation (default: true)
   bounce: false, // Reverse at boundaries (default: false)
-  direction: "down", // Scroll direction (default: 'down')
+  isHorizontal: false, // Scroll horizontally instead of vertically (default: false)
   autoplay: true, // Start automatically (default: true)
 });
 
@@ -89,7 +89,7 @@ document.getElementById("stopBtn").addEventListener("click", () => {
 });
 ```
 
-### With Bounce Effect
+### With Bounce Effect ↕︎
 
 ```javascript
 const scroller = createSlowScroll({
@@ -103,16 +103,58 @@ const scroller = createSlowScroll({
 // Starts automatically
 ```
 
-### Horizontal Scrolling
+**Notes:**
+- When `bounce` is `false`, scrolling stops when reaching page boundaries
+- When `bounce` is `true`, scroll direction automatically reverses at boundaries
+
+### Horizontal Scrolling →
 
 ```javascript
 const scroller = createSlowScroll({
   target: ".horizontal-content",
-  direction: "right", // Scroll horizontally
-  speed: 30,
+  isHorizontal: true, // Enable horizontal scrolling
+  speed: 30, // Scroll right at 30px/s
 });
 // Starts automatically
 ```
+
+### Reverse Direction Scrolling ↑←
+
+Use negative speed values to scroll in the opposite direction:
+
+```javascript
+// Scroll up instead of down
+const upScroller = createSlowScroll({
+  target: ".content",
+  speed: -30, // Negative speed = scroll up
+});
+
+// Scroll left instead of right
+const leftScroller = createSlowScroll({
+  target: ".horizontal-content",
+  isHorizontal: true,
+  speed: -30, // Negative speed = scroll left
+});
+```
+
+### Pause on User Interaction
+
+Pause scrolling when user touches or moves mouse over the scroll area:
+
+```javascript
+const scroller = createSlowScroll({
+  target: ".content",
+  speed: 30,
+  pauseOnTouch: true, // Pause when user touches (useful for mobile/tablet)
+  pauseOnMouseMove: true, // Pause when mouse is moving (useful for desktop)
+});
+// Scrolling automatically resumes when user stops interacting
+```
+
+**Use cases:**
+- `pauseOnTouch`: Prevents auto-scroll from interfering with user's touch scrolling on mobile devices
+- `pauseOnMouseMove`: Pauses when user moves mouse, allowing them to interact with content
+- Both options work together - enable one or both based on your needs
 
 ### Dynamic Speed Control
 
@@ -138,12 +180,6 @@ document.getElementById("slowDownBtn").addEventListener("click", () => {
 });
 ```
 
-**Notes:**
-
-- `speed` directly controls pixels per second (e.g., `speed: 24` = 24px/second)
-- When `bounce` is `false`, scrolling stops when reaching page boundaries
-- When `bounce` is `true`, scroll direction automatically reverses at boundaries
-
 ### Without Interpolation (Compare Performance)
 
 ```javascript
@@ -168,34 +204,36 @@ if (scroller.isRunning()) {
 
 // Get current configuration
 const config = scroller.getConfig();
-console.log(`Speed: ${config.speed}px/s, Direction: ${config.direction}`);
+console.log(`Speed: ${config.speed}px/s, Horizontal: ${config.isHorizontal}`);
 ```
 
 ## API Reference
 
 ### Methods
 
-| Method | Parameters | Returns | Description |
-|--------|-----------|---------|-------------|
-| `start()` | None | `void` | Starts the auto-scrolling. Does nothing if already running. |
-| `stop()` | None | `void` | Stops the auto-scrolling and resets transform states. |
-| `setSpeed(newSpeed)` | `newSpeed: number` | `void` | Updates scroll speed in pixels per second. Automatically restarts if running. |
-| `isRunning()` | None | `boolean` | Returns `true` if currently scrolling, `false` otherwise. |
-| `getConfig()` | None | `object` | Returns a copy of the current configuration object. |
+| Method               | Parameters         | Returns   | Description                                                                   |
+| -------------------- | ------------------ | --------- | ----------------------------------------------------------------------------- |
+| `start()`            | None               | `void`    | Starts the auto-scrolling. Does nothing if already running.                   |
+| `stop()`             | None               | `void`    | Stops the auto-scrolling and resets transform states.                         |
+| `setSpeed(newSpeed)` | `newSpeed: number` | `void`    | Updates scroll speed in pixels per second. Automatically restarts if running. |
+| `isRunning()`        | None               | `boolean` | Returns `true` if currently scrolling, `false` otherwise.                     |
+| `getConfig()`        | None               | `object`  | Returns a copy of the current configuration object.                           |
 
 ### Configuration Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `target` | `string \| HTMLElement` | **Required** | CSS selector or DOM element of the scrollable container. |
-| `interpolationTarget` | `string \| HTMLElement` | `null` | CSS selector or DOM element to apply interpolation transform. If not specified, uses `target` for window scrolling, or the scrollable container itself for element scrolling. |
-| `speed` | `number` | `30` | Scroll speed in pixels per second. |
-| `interpolation` | `boolean` | `true` | Enable transform interpolation for smooth visual experience. |
-| `bounce` | `boolean` | `false` | Reverse scroll direction when reaching boundaries. |
-| `direction` | `string` | `'down'` | Scroll direction: `'up'`, `'down'`, `'left'`, or `'right'`. |
-| `autoplay` | `boolean` | `true` | Start scrolling automatically when instance is created. |
-| `onDirectionChange` | `function` | `null` | Callback function called when scroll direction changes (with bounce enabled). Receives new direction as parameter. |
-| `onBoundaryReached` | `function` | `null` | Callback function called when boundary is reached (with bounce disabled). Receives boundary type as parameter. |
+| Option                | Type                    | Default      | Description                                                                                                                                                                   |
+| --------------------- | ----------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `target`              | `string \| HTMLElement` | **Required** | CSS selector or DOM element of the scrollable container.                                                                                                                      |
+| `interpolationTarget` | `string \| HTMLElement` | `null`       | CSS selector or DOM element to apply interpolation transform. If not specified, uses `target` for window scrolling, or the scrollable container itself for element scrolling. |
+| `speed`               | `number`                | `30`         | Scroll speed in pixels per second (e.g., `24` = 24px/second). Positive values scroll down/right, negative values scroll up/left. Use `0` to pause.                            |
+| `interpolation`       | `boolean`               | `true`       | Enable transform interpolation for smooth visual experience.                                                                                                                  |
+| `bounce`              | `boolean`               | `false`      | Reverse scroll direction when reaching boundaries.                                                                                                                            |
+| `isHorizontal`        | `boolean`               | `false`      | Scroll horizontally instead of vertically.                                                                                                                                    |
+| `autoplay`            | `boolean`               | `true`       | Start scrolling automatically when instance is created.                                                                                                                       |
+| `pauseOnTouch`        | `boolean`               | `false`      | Pause scrolling when user touches the scroll area (useful for mobile).                                                                                                        |
+| `pauseOnMouseMove`    | `boolean`               | `false`      | Pause scrolling when mouse is moving over the scroll area.                                                                                                                    |
+| `onDirectionChange`   | `function`              | `null`       | Callback function called when scroll direction changes (with bounce enabled). Receives new direction as parameter.                                                            |
+| `onBoundaryReached`   | `function`              | `null`       | Callback function called when boundary is reached (with bounce disabled). Receives boundary type as parameter.                                                                |
 
 ## Development
 
