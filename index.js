@@ -5,7 +5,7 @@
  * with high-frequency CSS transform interpolation for smooth visual experience.
  *
  * @author Yamato Iizuka
- * @version 0.0.4
+ * @version 0.0.5
  * @license MIT
  */
 
