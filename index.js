@@ -329,7 +329,11 @@ export function createSlowScroll(options = {}) {
       // If scroll position is out of valid range, pause to prevent jitter
       const maxScroll = scrollHelpers.getMaxScroll();
       const currentScroll = scrollHelpers.getScrollPosition();
-      const isInOverscroll = currentScroll < 0 || currentScroll > maxScroll;
+      // Allow small tolerance (2px) for floating point errors in Chromium browsers
+      const overscrollTolerance = 2;
+      const isInOverscroll =
+        currentScroll < -overscrollTolerance ||
+        currentScroll > maxScroll + overscrollTolerance;
 
       if (isInOverscroll) {
         // In overscroll state (WebKit elastic bounce)
@@ -354,29 +358,33 @@ export function createSlowScroll(options = {}) {
 
       // Execute actual scroll when frame interval has passed
       if (elapsed >= frameInterval) {
+        // Get the latest scroll position before boundary check
+        const latestScroll = scrollHelpers.getScrollPosition();
+        const latestMaxScroll = scrollHelpers.getMaxScroll();
+
         // Boundary check based on direction
         let atBoundary = false;
         let boundaryType = null;
 
         if (isVertical) {
           // Check if reached bottom
-          if (scrollDirection === 1 && currentScroll >= maxScroll - 1) {
+          if (scrollDirection === 1 && latestScroll >= latestMaxScroll - 1) {
             atBoundary = true;
             boundaryType = "bottom";
           }
           // Check if reached top
-          else if (scrollDirection === -1 && currentScroll <= 1) {
+          else if (scrollDirection === -1 && latestScroll <= 1) {
             atBoundary = true;
             boundaryType = "top";
           }
         } else if (isHorizontal) {
           // Check if reached right
-          if (scrollDirection === 1 && currentScroll >= maxScroll - 1) {
+          if (scrollDirection === 1 && latestScroll >= latestMaxScroll - 1) {
             atBoundary = true;
             boundaryType = "right";
           }
           // Check if reached left
-          else if (scrollDirection === -1 && currentScroll <= 1) {
+          else if (scrollDirection === -1 && latestScroll <= 1) {
             atBoundary = true;
             boundaryType = "left";
           }
