@@ -4,7 +4,7 @@ export default defineConfig({
   root: ".",
   base: "/slow-scroll/",
   build: {
-    outDir: "../dist",
+    outDir: "dist",
     emptyOutDir: true,
   },
   server: {

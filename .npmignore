@@ -1,6 +1,7 @@
 # Demo and development files
 demo/
 dist/
+demo/dist/
 
 # Version control
 .git/
