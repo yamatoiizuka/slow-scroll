@@ -28,18 +28,42 @@ npm install slow-scroll
 
 ```javascript
 import createSlowScroll from "slow-scroll";
+
+const scroller = SlowScroll.createSlowScroll({
+  target: "#container",
+  speed: 30,
+  bounce: true,
+});
 ```
+
+### CDN
+
+```html
+<!-- Load from CDN -->
+<script src="https://unpkg.com/slow-scroll@latest/dist/slow-scroll.umd.js"></script>
+
+<script>
+  const scroller = SlowScroll.createSlowScroll({
+    target: "#container",
+    speed: 30,
+    bounce: true,
+  });
+</script>
+```
+
+**Note:** When using the CDN version, the library is available as `SlowScroll` global variable.
 
 ## Usage
 
 ### Basic Example
 
 ```javascript
-import createSlowScroll from "slow-scroll";
+// Simplest usage - scrolls body automatically
+const scroller = createSlowScroll();
 
-// Create instance - starts automatically (autoplay: true by default)
+// With custom options
 const scroller = createSlowScroll({
-  target: ".content", // Scrollable container (required)
+  target: ".content", // Scrollable container (defaults to 'body')
   interpolationTarget: ".inner", // Element to apply interpolation (optional, defaults to target)
   speed: 30, // Pixels per second - positive = down/right, negative = up/left (default: 30)
   interpolation: true, // Enable interpolation (default: true)
@@ -59,16 +83,23 @@ scroller.start();
 
 ### Separate Interpolation Target
 
-When you want to scroll one element but apply interpolation to another (useful for complex layouts):
+By default, interpolation transforms are applied to the scrollable element itself. However, in complex layouts with fixed headers, sidebars, or other non-scrolling elements, you may notice unwanted visual jitter or stutter on those elements.
+
+Use `interpolationTarget` to apply the smooth interpolation only to the content area, preventing unwanted transform effects on other parts of your layout:
 
 ```javascript
 const scroller = createSlowScroll({
   target: ".scrollable-container", // Element with overflow: auto
-  interpolationTarget: ".inner-content", // Element to apply smooth interpolation
+  interpolationTarget: ".inner-content", // Only this element gets the smooth interpolation
   speed: 20,
   interpolation: true,
 });
 ```
+
+**Use this when:**
+- You have fixed headers, footers, or sidebars that shouldn't be affected by the transform
+- You notice visual jitter or stuttering on elements that shouldn't move
+- You have a complex layout where only specific content should receive the smooth effect
 
 ### Manual Control (Without Autoplay)
 
@@ -104,6 +135,7 @@ const scroller = createSlowScroll({
 ```
 
 **Notes:**
+
 - When `bounce` is `false`, scrolling stops when reaching page boundaries
 - When `bounce` is `true`, scroll direction automatically reverses at boundaries
 
@@ -152,6 +184,7 @@ const scroller = createSlowScroll({
 ```
 
 **Use cases:**
+
 - `pauseOnTouch`: Prevents auto-scroll from interfering with user's touch scrolling on mobile devices
 - `pauseOnMouseMove`: Pauses when user moves mouse, allowing them to interact with content
 - Both options work together - enable one or both based on your needs
@@ -221,20 +254,20 @@ console.log(`Speed: ${config.speed}px/s, Horizontal: ${config.isHorizontal}`);
 
 ### Configuration Options
 
-| Option                | Type                    | Default      | Description                                                                                                                                                                   |
-| --------------------- | ----------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `target`              | `string \| HTMLElement` | **Required** | CSS selector or DOM element of the scrollable container.                                                                                                                      |
-| `interpolationTarget` | `string \| HTMLElement` | `null`       | CSS selector or DOM element to apply interpolation transform. If not specified, uses `target` for window scrolling, or the scrollable container itself for element scrolling. |
-| `speed`               | `number`                | `30`         | Scroll speed in pixels per second (e.g., `24` = 24px/second). Positive values scroll down/right, negative values scroll up/left. Use `0` to pause.                            |
-| `interpolation`       | `boolean`               | `true`       | Enable transform interpolation for smooth visual experience.                                                                                                                  |
-| `bounce`              | `boolean`               | `false`      | Reverse scroll direction when reaching boundaries.                                                                                                                            |
-| `isHorizontal`        | `boolean`               | `false`      | Scroll horizontally instead of vertically.                                                                                                                                    |
-| `autoplay`            | `boolean`               | `true`       | Start scrolling automatically when instance is created.                                                                                                                       |
-| `pauseOnTouch`        | `boolean`               | `false`      | Pause scrolling when user touches the scroll area (useful for mobile).                                                                                                        |
-| `pauseOnMouseMove`    | `boolean`               | `false`      | Pause scrolling when mouse is moving over the scroll area.                                                                                                                    |
-| `userScrollResumeDelay` | `number`              | `100`        | Time in milliseconds to wait before resuming auto-scroll after user scrolling stops (iOS/iPadOS only). Increase if momentum scrolling feels interrupted.                     |
-| `onDirectionChange`   | `function`              | `null`       | Callback function called when scroll direction changes (with bounce enabled). Receives new direction as parameter.                                                            |
-| `onBoundaryReached`   | `function`              | `null`       | Callback function called when boundary is reached (with bounce disabled). Receives boundary type as parameter.                                                                |
+| Option                  | Type                    | Default  | Description                                                                                                                                                                   |
+| ----------------------- | ----------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `target`                | `string \| HTMLElement` | `'body'` | CSS selector or DOM element of the scrollable container.                                                                                                                      |
+| `interpolationTarget`   | `string \| HTMLElement` | `null`   | CSS selector or DOM element to apply interpolation transform. If not specified, uses `target` for window scrolling, or the scrollable container itself for element scrolling. |
+| `speed`                 | `number`                | `30`     | Scroll speed in pixels per second (e.g., `24` = 24px/second). Positive values scroll down/right, negative values scroll up/left. Use `0` to pause.                            |
+| `interpolation`         | `boolean`               | `true`   | Enable transform interpolation for smooth visual experience.                                                                                                                  |
+| `bounce`                | `boolean`               | `false`  | Reverse scroll direction when reaching boundaries.                                                                                                                            |
+| `isHorizontal`          | `boolean`               | `false`  | Scroll horizontally instead of vertically.                                                                                                                                    |
+| `autoplay`              | `boolean`               | `true`   | Start scrolling automatically when instance is created.                                                                                                                       |
+| `pauseOnTouch`          | `boolean`               | `false`  | Pause scrolling when user touches the scroll area (useful for mobile).                                                                                                        |
+| `pauseOnMouseMove`      | `boolean`               | `false`  | Pause scrolling when mouse is moving over the scroll area.                                                                                                                    |
+| `userScrollResumeDelay` | `number`                | `100`    | Time in milliseconds to wait before resuming auto-scroll after user scrolling stops (iOS/iPadOS only). Increase if momentum scrolling feels interrupted.                      |
+| `onDirectionChange`     | `function`              | `null`   | Callback function called when scroll direction changes (with bounce enabled). Receives new direction as parameter.                                                            |
+| `onBoundaryReached`     | `function`              | `null`   | Callback function called when boundary is reached (with bounce disabled). Receives boundary type as parameter.                                                                |
 
 ## Development
 

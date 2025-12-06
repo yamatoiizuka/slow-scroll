@@ -1,11 +1,14 @@
-# Demo and development files
+# Demo
 demo/
-dist/
-demo/dist/
+
+# Development files
+rollup.config.js
+CLAUDE.md
 
 # Version control
 .git/
 .github/
+.gitignore
 
 # IDE and system files
 .DS_Store

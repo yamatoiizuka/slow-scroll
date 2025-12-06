@@ -13,6 +13,7 @@
 // Default Configuration
 // ========================================
 const DEFAULTS = {
+  target: 'body', // Default scroll target
   speed: 30, // Pixels per second (positive = down/right, negative = up/left)
   interpolation: true, // Enable transform interpolation
   bounce: false, // Reverse direction at boundaries
@@ -47,7 +48,7 @@ function isIOSDevice() {
  * Creates a smooth scrolling instance with transform interpolation
  *
  * @param {Object} options - Configuration options
- * @param {string|HTMLElement} options.target - CSS selector or DOM element of scrollable container (required)
+ * @param {string|HTMLElement} [options.target='body'] - CSS selector or DOM element of scrollable container (defaults to 'body')
  * @param {string|HTMLElement} [options.interpolationTarget] - CSS selector or DOM element to apply interpolation transform (optional, defaults to target)
  * @param {number} [options.speed=30] - Scroll speed in pixels per second (positive = down/right, negative = up/left)
  * @param {boolean} [options.interpolation=true] - Enable transform interpolation for smoothness
@@ -62,13 +63,15 @@ function isIOSDevice() {
  * @returns {Object} Instance with start() and stop() methods
  *
  * @example
- * // With autoplay (default)
+ * // Simplest usage - scrolls body by default
+ * const scroller = createSlowScroll();
+ *
+ * // With custom target
  * const scroller = createSlowScroll({
  *   target: '.project-grid',
  *   speed: 24,  // 24 pixels per second
  *   interpolation: true,
- *   bounce: true,
- *   direction: 'down'
+ *   bounce: true
  * });
  * // Scrolling starts automatically
  *
@@ -91,14 +94,12 @@ function isIOSDevice() {
  * });
  */
 export function createSlowScroll(options = {}) {
-  // Validate required options
-  if (!options.target) {
-    throw new Error('SmoothScroll: "target" option is required');
-  }
+  // Use default target if not provided
+  const target = options.target ?? DEFAULTS.target;
 
   // Validate target type
-  const isString = typeof options.target === "string";
-  const isElement = options.target instanceof HTMLElement;
+  const isString = typeof target === "string";
+  const isElement = target instanceof HTMLElement;
 
   if (!isString && !isElement) {
     throw new Error(
@@ -116,7 +117,7 @@ export function createSlowScroll(options = {}) {
 
   // Configuration
   const config = {
-    target: options.target,
+    target: target,
     interpolationTarget: options.interpolationTarget ?? null, // null means use target
     speed: speed,
     absSpeed: absSpeed,

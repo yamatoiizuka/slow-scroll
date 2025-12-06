@@ -4,6 +4,8 @@
   "description": "Super Slow Smooth Scroll",
   "main": "index.js",
   "module": "index.js",
+  "unpkg": "dist/slow-scroll.umd.js",
+  "jsdelivr": "dist/slow-scroll.umd.js",
   "type": "module",
   "exports": {
     ".": {
@@ -13,8 +15,14 @@
   },
   "files": [
     "index.js",
+    "dist",
     "README.md"
   ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && rollup -c",
+    "prepublishOnly": "npm run build"
+  },
   "keywords": [
     "smooth-scroll",
     "slow-scroll",
@@ -30,5 +38,8 @@
   },
   "bugs": {
     "url": "https://github.com/yamatoiizuka/slow-scroll/issues"
+  },
+  "devDependencies": {
+    "rollup": "^4.28.1"
   }
 }
