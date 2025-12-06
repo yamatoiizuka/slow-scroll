@@ -5,7 +5,7 @@
  * with high-frequency CSS transform interpolation for smooth visual experience.
  *
  * @author Yamato Iizuka
- * @version 0.0.6
+ * @version 0.0.7
  * @license MIT
  */
 
@@ -13,7 +13,7 @@
 // Default Configuration
 // ========================================
 const DEFAULTS = {
-  target: 'body', // Default scroll target
+  target: "body", // Default scroll target
   speed: 30, // Pixels per second (positive = down/right, negative = up/left)
   interpolation: true, // Enable transform interpolation
   bounce: false, // Reverse direction at boundaries
