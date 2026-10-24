@@ -273,6 +273,8 @@ console.log(`Speed: ${config.speed}px/s, Horizontal: ${config.isHorizontal}`);
 
 ### Run Demo Locally
 
+Use Node.js 24 (recommended), or a version satisfying `^20.19.0 || >=22.12.0`.
+
 ```bash
 cd demo
 npm install
