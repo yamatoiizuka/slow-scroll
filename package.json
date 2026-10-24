@@ -40,6 +40,6 @@
     "url": "https://github.com/yamatoiizuka/slow-scroll/issues"
   },
   "devDependencies": {
-    "rollup": "^4.28.1"
+    "rollup": "^4.65.0"
   }
 }
